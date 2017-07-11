@@ -275,7 +275,18 @@ int is_hit_body(int flag)
 	// 	fprintf(stderr, "check point: (%d, %d)\n", des->x, des->y);
 	// }
 	while(prev){
-		if(flag && prev == the_snake.head) break;
+		if(flag && prev->pos.x == the_snake.head->pos.x &&
+			prev->pos.y == the_snake.head->pos.y) break;
+		if(setting.border == BORDER_OFF){
+			if((p->pos.x == WIN_COLS - 2 && prev->pos.x == 1) ||
+			(p->pos.x == 1 && prev->pos.x == WIN_COLS - 2) ||
+			(p->pos.y == WIN_LINES - 2 && prev->pos.y == 1) ||
+			(p->pos.y == 1 && prev->pos.y == WIN_LINES - 2)){
+				p = prev;
+				prev = p->prev;
+				continue;
+			}
+		}
 		// if(flag == 1){
 		// 	fprintf(stderr, "check point is on segment (%d, %d) - (%d, %d)\n", p->pos.x, p->pos.y, prev->pos.x, prev->pos.y);
 		// }
@@ -301,6 +312,7 @@ void redraw_snack(int signum)
 	struct node_front *prev;
 	struct timeval tv1;
 	struct timeval tv2;
+	struct xc_point prev_pos;
 
 	gettimeofday(&tv1, NULL);
 	/* need veer */
@@ -317,6 +329,7 @@ void redraw_snack(int signum)
 		the_snake.head = add_to_head(the_snake.head, &pos);
 		// has_veer = 1;
 	}
+	prev_pos = the_snake.head->pos;
 	/* head node step forward */
 	mvaddch(the_snake.head->pos.y, the_snake.head->pos.x, SYMBOL_SNAKE_BODY);
 	switch(the_snake.dir){
@@ -339,8 +352,11 @@ void redraw_snack(int signum)
 		if(setting.border == BORDER_ON)
 			goto gmover;
 		else{
+			struct xc_point pos;
+
 			mvaddch(the_snake.head->pos.y, the_snake.head->pos.x,
 				SYMBOL_BORDER_OFF);
+
 			if(the_snake.head->pos.x == WIN_COLS - 1)
 				the_snake.head->pos.x = 1;
 			if(the_snake.head->pos.x == 0)
@@ -350,6 +366,14 @@ void redraw_snack(int signum)
 				the_snake.head->pos.y = 1;
 			if(the_snake.head->pos.y == 0)
 				the_snake.head->pos.y = WIN_LINES - 2;
+
+			pos = the_snake.head->pos;		/* other side of border */
+			// fprintf(stderr, "Points in other side: (%d, %d)\n", pos.x, pos.y);
+			the_snake.head->pos = prev_pos;	/* this side of border */
+			// fprintf(stderr, "Points in this side: (%d, %d)\n", prev_pos.x, prev_pos.y);
+			/* generate two points to across a border */
+			the_snake.head = add_to_head(the_snake.head, &pos);
+			the_snake.head = add_to_head(the_snake.head, &pos);
 		}
 	}
 	if(is_hit_body(1)) goto gmover;
@@ -366,16 +390,23 @@ void redraw_snack(int signum)
 	prev = the_snake.tail->prev;
 
 	if(prev->pos.y == the_snake.tail->pos.y){
-		if(abs(the_snake.tail->pos.x - prev->pos.x) == 1){
+		/* dis == 1 or on the both side of the border */
+		if(abs(the_snake.tail->pos.x - prev->pos.x) == 1 ||
+			(the_snake.tail->pos.x == WIN_COLS - 2 && prev->pos.x == 1) ||
+			(the_snake.tail->pos.x == 1 && prev->pos.x == WIN_COLS - 2)){
+			// fprintf(stderr, "free point: (%d, %d)\n", the_snake.tail->pos.x, the_snake.tail->pos.y);
+			// fprintf(stderr, "previous node: (%d, %d)\n", prev->pos.x, prev->pos.y);
 			free(the_snake.tail);
 			the_snake.tail = prev;
-		}else{
+		}else
 			the_snake.tail->pos.x += prev->pos.x > the_snake.tail->pos.x ?
 				1 : -1;
-		}
+		
 
 	}else if(prev->pos.x == the_snake.tail->pos.x){
-		if(abs(the_snake.tail->pos.y - prev->pos.y) == 1){
+		if(abs(the_snake.tail->pos.y - prev->pos.y) == 1||
+			(the_snake.tail->pos.y == WIN_LINES - 2 && prev->pos.y == 1) ||
+			(the_snake.tail->pos.y == 1 && prev->pos.y == WIN_LINES - 2)){
 			free(the_snake.tail);
 			the_snake.tail = prev;
 		}else
@@ -386,12 +417,23 @@ void redraw_snack(int signum)
 	gettimeofday(&tv2, NULL);
 	// fprintf(stderr, "this signal handle take %f ms.\n", tv2.tv_sec * 1000 + tv2.tv_usec / 1000.0 - (tv1.tv_sec * 1000 + tv1.tv_usec / 1000.0));
 	/* less than 1ms on my machine */
+	// print_snake();
 	return ;
 gmover:
 	attron(A_BOLD);
 	mvaddch(the_snake.head->pos.y, the_snake.head->pos.x, 'x');
 	attroff(A_BOLD);
 	game_over();
+}
+void print_snake()
+{
+	struct node_front *prev;
+	prev = the_snake.tail;
+	fprintf(stderr, "snake:\n");
+	while(prev){
+		fprintf(stderr, "(%d, %d)\n", prev->pos.x, prev->pos.y);
+		prev = prev->prev;
+	}
 }
 int is_hit_wall()
 {

@@ -38,6 +38,7 @@ void before_destory();
 int draw_menu();
 void draw_fruit();
 int is_hit_wall();
+void print_snake();
 int is_hit_body(int flag);
 void game_over();
 void draw_body_line(const struct xc_point *p1, const struct xc_point *p2);
