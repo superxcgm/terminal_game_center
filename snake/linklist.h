@@ -8,3 +8,4 @@ struct node_front{
 };
 struct node_front *add_to_head(struct node_front *head,
 	const struct xc_point *pos);
+void free_node_front(struct node_front *tail);

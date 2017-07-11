@@ -32,11 +32,13 @@ struct snake{
 };
 void init();
 void before_destory();
-void draw_menu();
+int draw_menu();
 void draw_fruit();
 int is_fuit_legal();
+void game_over();
 void draw_body_line(const struct xc_point *p1, const struct xc_point *p2);
 void draw_border(char ch);
 void draw_control_menu(int flag, int base);
 void on_game();
 void redraw_snack(int signum);
+void load_all_res();

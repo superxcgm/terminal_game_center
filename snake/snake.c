@@ -8,7 +8,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <curses.h>
+#include <string.h>
 #include <signal.h>
+#include <sys/time.h>
 #include <time.h>
 #include "snake.h"
 #include "res.h"
@@ -17,13 +19,19 @@
 struct snake_setting setting;
 struct snake the_snake;
 int score;
+int gover;
 struct xc_queue queue_dir;
 struct xc_point fruit;
+
+struct XC_Res *res_snake;
+struct XC_Res *res_game_over;
+struct XC_Res *res_control_menu;
 
 int main(void)
 {
 	init();
-	draw_menu();
+	while(draw_menu())
+		;
 	before_destory();
 	return 0;
 }
@@ -37,6 +45,7 @@ void init()
 		fprintf(stderr, "Please resize your window and try again\n");
 		exit(1);
 	}
+	load_all_res();
 	srand(time(0));
 	cbreak(); /* donot buffer input */
 	noecho();
@@ -46,18 +55,26 @@ void init()
 	signal(SIGINT, SIG_IGN);
 	signal(SIGQUIT, SIG_IGN);
 }
+void load_all_res()
+{
+
+	res_snake = load_res("res/snake.res");
+	res_control_menu = load_res("res/control_menu.res");
+	res_game_over = load_res("res/game_over.res");
+}
 void before_destory()
 {
 	curs_set(1); /* display cursor */
 	endwin();
 }
-void draw_menu()
+int draw_menu()
 {
-	struct XC_Res *res_snake;
 	int i;
 	int ch;
 	int control_menu_base;
-	res_snake = load_res("res/snake.res");
+
+	clear();
+	
 	for(i = 0; i < res_snake->cnt; ++i)
 		mvaddstr(i + 3, 3, res_snake->data[i]);
 	addstr("   V"VERSION); /* strcat */
@@ -97,12 +114,12 @@ void draw_menu()
 				break;
 			case 'q': /* quit */
 			case 'Q':
-				before_destory();
-				exit(0);
+				return 0;
 				break;
 			case ' ':
 			case '\n':
 				on_game();
+				return 1;	/* reenter menu */
 				break;
 		}
 	}
@@ -113,6 +130,7 @@ void on_game()
 	int ch;
 	int pre_ch;
 	score = 0;
+	gover = 1;
 	if(xc_queue_init(&queue_dir) == 0){
 		before_destory();
 		printf("Can not initialize queue_dir.\n");
@@ -144,6 +162,17 @@ void on_game()
 		ch = getch();
 		if(ch == pre_ch)	/* ignore duplication key press */
 			continue;
+		if(gover)
+			switch(ch){
+				case 'm':
+				case 'M':
+					return ;	/* back to menu */
+					break;
+				case '\n':
+					on_game();	/* just recursion */
+					return ;
+					break;
+			}
 		switch(ch){
 			case 'w':
 			case 'W':
@@ -216,9 +245,11 @@ void draw_body_line(const struct xc_point *p1, const struct xc_point *p2)
 }
 void draw_fruit()
 {
+	/* border left:0, border right: WIN_COLS - 1
+		fruit shouldn't in the border */
 	do{
-		fruit.x = rand() % (WIN_COLS - 1) + 1;
-		fruit.y = rand() % (WIN_LINES - 1) + 1;	
+		fruit.x = rand() % (WIN_COLS - 2) + 1;
+		fruit.y = rand() % (WIN_LINES - 2) + 1;	
 	}while(!is_fuit_legal());
 	mvaddch(fruit.y, fruit.x, SYMBOL_FRUIT);
 	refresh();
@@ -248,7 +279,10 @@ void redraw_snack(int signum)
 {
 	int new_dir;
 	struct node_front *prev;
+	struct timeval tv1;
+	struct timeval tv2;
 
+	gettimeofday(&tv1, NULL);
 	/* need veer */
 	if(xc_queue_get(&queue_dir, &new_dir) && 
 		the_snake.dir != new_dir &&
@@ -279,7 +313,23 @@ void redraw_snack(int signum)
 			break;
 	}
 	mvaddch(the_snake.head->pos.y, the_snake.head->pos.x, SYMBOL_SNAKE_HEAD);
-
+	if(setting.border == BORDER_ON &&
+		(the_snake.head->pos.x == 0 ||
+		the_snake.head->pos.y == 0 ||
+		the_snake.head->pos.x == WIN_COLS - 1 ||
+		the_snake.head->pos.y == WIN_LINES - 1)){
+		attron(A_BOLD);
+		mvaddch(the_snake.head->pos.y, the_snake.head->pos.x, 'x');
+		attroff(A_BOLD);
+		game_over();
+		return;
+	}
+	/* eat fruit */
+	if(the_snake.head->pos.x == fruit.x && the_snake.head->pos.y == fruit.y){
+		draw_fruit();
+		/* when eat a fruit, the length of snake add one, so tail do not move forward */
+		return ;
+	}
 	/* last node step forward */
 	mvaddch(the_snake.tail->pos.y, the_snake.tail->pos.x, SYMBOL_BLANK);
 	prev = the_snake.tail->prev;
@@ -300,8 +350,26 @@ void redraw_snack(int signum)
 			the_snake.tail->pos.y += prev->pos.y > the_snake.tail->pos.y ?
 				1 : -1;
 	}
-	
+	refresh();
+	gettimeofday(&tv2, NULL);
+	// fprintf(stderr, "this signal handle take %f ms.\n", tv2.tv_sec * 1000 + tv2.tv_usec / 1000.0 - (tv1.tv_sec * 1000 + tv1.tv_usec / 1000.0));
+	/* less than 1ms on my machine */
+}
+void game_over()
+{
+	int set_ticker(int n_msecs);
+	int i;
+	int left_offset;
 
+	signal(SIGALRM, SIG_IGN);
+	set_ticker(0); /* do not redraw snake any more */
+	
+	left_offset = (WIN_COLS - strlen(res_game_over->data[0])) / 2;
+	for(i = 0; i < res_game_over->cnt; ++i)
+		mvaddstr(3 + i, left_offset, res_game_over->data[i]);
+	gover = 1;
+	/* free storage */
+	free_node_front(the_snake.tail);
 	refresh();
 }
 void draw_control_menu(int flag, int base)
@@ -309,12 +377,11 @@ void draw_control_menu(int flag, int base)
 	const int left_offset = 7;
 	const int height = 10;
 	const int width  = 53;
-	struct XC_Res *res_control_menu;
 	int i;
 	/* 0=>base, 1=>control part */
 	switch(flag){
 		case 0:
-			res_control_menu = load_res("res/control_menu.res");
+			
 			for(i = 0; i < res_control_menu->cnt; ++i)
 				mvaddstr(base + i, left_offset, res_control_menu->data[i]);
 			break;

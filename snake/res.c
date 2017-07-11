@@ -16,7 +16,8 @@ struct XC_Res *load_res(const char *path)
 		exit(1);
 	}
 	res_rtn->cnt = nlines;
-	res_rtn->data = (char **)malloc(res_rtn->cnt * sizeof(char *));
+	res_rtn->data = (char **)malloc(res_rtn->cnt * sizeof(char *) + 1);
+	i = 0;
 	while(fgets(buf, BUFSIZ - 1, fp)){
 		int len = strlen(buf);
 		if(buf[len - 1] == '\n') buf[len - 1] = '\0';/* remove newline character */

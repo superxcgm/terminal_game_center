@@ -13,3 +13,12 @@ struct node_front *add_to_head(struct node_front *head,
 	head->prev = new_node;
 	return new_node;
 }
+void free_node_front(struct node_front *tail)
+{
+	struct node_front *prev;
+	while(tail){
+		prev = tail->prev;
+		free(tail);
+		tail = prev;
+	}
+}
