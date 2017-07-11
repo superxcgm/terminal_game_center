@@ -57,7 +57,7 @@ void draw_menu()
 	int i;
 	int ch;
 	int control_menu_base;
-	res_snake = load_res("snake.res");
+	res_snake = load_res("res/snake.res");
 	for(i = 0; i < res_snake->cnt; ++i)
 		mvaddstr(i + 3, 3, res_snake->data[i]);
 	addstr("   V"VERSION); /* strcat */
@@ -314,7 +314,7 @@ void draw_control_menu(int flag, int base)
 	/* 0=>base, 1=>control part */
 	switch(flag){
 		case 0:
-			res_control_menu = load_res("control_menu.res");
+			res_control_menu = load_res("res/control_menu.res");
 			for(i = 0; i < res_control_menu->cnt; ++i)
 				mvaddstr(base + i, left_offset, res_control_menu->data[i]);
 			break;
