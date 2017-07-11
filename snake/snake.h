@@ -9,6 +9,7 @@
 #define BORDER_OFF			0
 #define INIT_X				40
 #define INIT_Y				12
+#define INIT_LEN			3
 #define DIR_LEFT			1
 #define DIR_RIGHT			2
 #define DIR_UP				3
@@ -17,6 +18,8 @@
 #define SYMBOL_SNAKE_HEAD	'@'
 #define SYMBOL_FRUIT 		'$'
 #define SYMBOL_BLANK		' '
+#define SYMBOL_BORDER_ON	'#'
+#define SYMBOL_BORDER_OFF	'.'
 #define ONDEBUG
 
 struct snake_setting{
@@ -34,7 +37,8 @@ void init();
 void before_destory();
 int draw_menu();
 void draw_fruit();
-int is_fuit_legal();
+int is_hit_wall();
+int is_hit_body(int flag);
 void game_over();
 void draw_body_line(const struct xc_point *p1, const struct xc_point *p2);
 void draw_border(char ch);

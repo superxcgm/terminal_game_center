@@ -129,6 +129,7 @@ void on_game()
 	int set_ticker(int n_msecs);
 	int ch;
 	int pre_ch;
+	int delay;
 	score = 0;
 	gover = 1;
 	if(xc_queue_init(&queue_dir) == 0){
@@ -137,7 +138,8 @@ void on_game()
 		exit(1);
 	}
 	clear(); /* clear screen */
-	draw_border(setting.border == BORDER_ON ? '#' : '.');
+	draw_border(setting.border == BORDER_ON ?
+		SYMBOL_BORDER_ON : SYMBOL_BORDER_OFF);
 	/* init snake */
 	the_snake.head = (struct node_front*)malloc(sizeof(struct node_front));
 	the_snake.head->pos.x = INIT_X;
@@ -145,7 +147,7 @@ void on_game()
 	the_snake.head->prev = NULL;
 	the_snake.tail = (struct node_front*)malloc(sizeof(struct node_front));
 	the_snake.tail->pos.y = the_snake.head->pos.y;
-	the_snake.tail->pos.x = the_snake.head->pos.x - 3;
+	the_snake.tail->pos.x = the_snake.head->pos.x - INIT_LEN;
 	the_snake.tail->prev = the_snake.head;
 	the_snake.dir = DIR_RIGHT;
 
@@ -156,7 +158,8 @@ void on_game()
 	draw_fruit();
 
 	signal(SIGALRM, redraw_snack);
-	set_ticker(100);	/* speed of snake would not change during play */
+	delay = 20 * (10 - setting.level);
+	set_ticker(delay);	/* speed of snake would not change during play */
 	pre_ch = ' ';
 	while(1){
 		ch = getch();
@@ -250,34 +253,51 @@ void draw_fruit()
 	do{
 		fruit.x = rand() % (WIN_COLS - 2) + 1;
 		fruit.y = rand() % (WIN_LINES - 2) + 1;	
-	}while(!is_fuit_legal());
+	}while(is_hit_body(0));
 	mvaddch(fruit.y, fruit.x, SYMBOL_FRUIT);
 	refresh();
 }
-int is_fuit_legal()
+/* flag: 
+		0=>fruit check
+		1=>head node check
+*/
+int is_hit_body(int flag)
 {
 	struct node_front *p;
 	struct node_front *prev;
+	struct xc_point *des;
+
 	p = the_snake.tail;
 	prev = p->prev;
+	des = flag ? &the_snake.head->pos : &fruit;
+	// if(flag == 1){
+	// 	fprintf(stderr, "is_hit_body(1):\n");
+	// 	fprintf(stderr, "check point: (%d, %d)\n", des->x, des->y);
+	// }
 	while(prev){
-		if(p->pos.x == prev->pos.x){
-			if((fruit.y >= p->pos.y && fruit.y <= prev->pos.y) ||
-				(fruit.y >= prev->pos.y && fruit.y <= p->pos.y))
-				return 0;
-		}else if(p->pos.y == prev->pos.y){
-			if((fruit.x >= p->pos.x && fruit.x <= prev->pos.x) ||
-				(fruit.x >= prev->pos.x && fruit.x <= p->pos.x))
-				return 0;
+		if(flag && prev == the_snake.head) break;
+		// if(flag == 1){
+		// 	fprintf(stderr, "check point is on segment (%d, %d) - (%d, %d)\n", p->pos.x, p->pos.y, prev->pos.x, prev->pos.y);
+		// }
+		if(p->pos.x == prev->pos.x && p->pos.x == des->x){
+			if((des->y >= p->pos.y && des->y <= prev->pos.y) ||
+				(des->y >= prev->pos.y && des->y <= p->pos.y))
+				return 1;
+		}else if(p->pos.y == prev->pos.y && p->pos.y == des->y){
+			if((des->x >= p->pos.x && des->x <= prev->pos.x) ||
+				(des->x >= prev->pos.x && des->x <= p->pos.x))
+				return 1;
 		}
 		p = prev;
 		prev = p->prev;
+		/* head node check do not check first segment */
 	}
-	return 1;
+	return 0;
 }
 void redraw_snack(int signum)
 {
 	int new_dir;
+	// int has_veer = 0;
 	struct node_front *prev;
 	struct timeval tv1;
 	struct timeval tv2;
@@ -295,6 +315,7 @@ void redraw_snack(int signum)
 		pos = the_snake.head->pos;
 		the_snake.dir = new_dir;
 		the_snake.head = add_to_head(the_snake.head, &pos);
+		// has_veer = 1;
 	}
 	/* head node step forward */
 	mvaddch(the_snake.head->pos.y, the_snake.head->pos.x, SYMBOL_SNAKE_BODY);
@@ -313,21 +334,31 @@ void redraw_snack(int signum)
 			break;
 	}
 	mvaddch(the_snake.head->pos.y, the_snake.head->pos.x, SYMBOL_SNAKE_HEAD);
-	if(setting.border == BORDER_ON &&
-		(the_snake.head->pos.x == 0 ||
-		the_snake.head->pos.y == 0 ||
-		the_snake.head->pos.x == WIN_COLS - 1 ||
-		the_snake.head->pos.y == WIN_LINES - 1)){
-		attron(A_BOLD);
-		mvaddch(the_snake.head->pos.y, the_snake.head->pos.x, 'x');
-		attroff(A_BOLD);
-		game_over();
-		return;
+	/* hit wall  or hit body */
+	if(is_hit_wall()){
+		if(setting.border == BORDER_ON)
+			goto gmover;
+		else{
+			mvaddch(the_snake.head->pos.y, the_snake.head->pos.x,
+				SYMBOL_BORDER_OFF);
+			if(the_snake.head->pos.x == WIN_COLS - 1)
+				the_snake.head->pos.x = 1;
+			if(the_snake.head->pos.x == 0)
+				the_snake.head->pos.x = WIN_COLS - 2;
+
+			if(the_snake.head->pos.y == WIN_LINES - 1)
+				the_snake.head->pos.y = 1;
+			if(the_snake.head->pos.y == 0)
+				the_snake.head->pos.y = WIN_LINES - 2;
+		}
 	}
+	if(is_hit_body(1)) goto gmover;
+	
 	/* eat fruit */
 	if(the_snake.head->pos.x == fruit.x && the_snake.head->pos.y == fruit.y){
 		draw_fruit();
-		/* when eat a fruit, the length of snake add one, so tail do not move forward */
+		/* when eat a fruit, the length of snake add one, so tail do not move
+		 forward */
 		return ;
 	}
 	/* last node step forward */
@@ -338,9 +369,10 @@ void redraw_snack(int signum)
 		if(abs(the_snake.tail->pos.x - prev->pos.x) == 1){
 			free(the_snake.tail);
 			the_snake.tail = prev;
-		}else
+		}else{
 			the_snake.tail->pos.x += prev->pos.x > the_snake.tail->pos.x ?
 				1 : -1;
+		}
 
 	}else if(prev->pos.x == the_snake.tail->pos.x){
 		if(abs(the_snake.tail->pos.y - prev->pos.y) == 1){
@@ -354,6 +386,20 @@ void redraw_snack(int signum)
 	gettimeofday(&tv2, NULL);
 	// fprintf(stderr, "this signal handle take %f ms.\n", tv2.tv_sec * 1000 + tv2.tv_usec / 1000.0 - (tv1.tv_sec * 1000 + tv1.tv_usec / 1000.0));
 	/* less than 1ms on my machine */
+	return ;
+gmover:
+	attron(A_BOLD);
+	mvaddch(the_snake.head->pos.y, the_snake.head->pos.x, 'x');
+	attroff(A_BOLD);
+	game_over();
+}
+int is_hit_wall()
+{
+	if(the_snake.head->pos.x == 0) return 1;
+	if(the_snake.head->pos.y == 0) return 1;
+	if(the_snake.head->pos.x == WIN_COLS - 1) return 1;
+	if(the_snake.head->pos.y == WIN_LINES - 1) return 1;
+	return 0;
 }
 void game_over()
 {
