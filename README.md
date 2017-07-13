@@ -1,7 +1,8 @@
 # terminal_game_center
 Some typical game implement in a terminal.
 ## snake
-under developing
+### Preview
+![snake](img/snake.jpg)
 ## bounce
 base on Understanding Unix/Linux Programming.
 

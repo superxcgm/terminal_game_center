@@ -1,11 +1,14 @@
 # snake
 A typical game, UI and experience reference `nsnake`.
 ## Preview
+![snake](../img/snake.jpg)
+## Feature
+* Use linklist to store veer point.
+* Use interval timer to redraw snake repeatedly.
 
-## Process
-developing
+## Todo List
+* score
+
 ## Usage
-1. Install `curses`.
-2. Download code.
-3. Compile, `gcc -lcurses snake.c res.c -o snake`.
-4. Run it, `./snake `.
+1. make
+2. ./snake
