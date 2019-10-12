@@ -1,5 +1,5 @@
 # terminal_game_center
-Some typical game implement in a terminal.
+Some typical game implement in a terminal with C.
 ## snake
 ### Preview
 ![snake](img/snake.jpg)
@@ -23,5 +23,3 @@ sudo apt-get install libncurses5-dev
 ```
 ##### OS X
 `...`
-#### Compile
-`gcc -lcurses hello.c`
