@@ -6,10 +6,10 @@
  * 			`Q` quit
  *
  * blocks on read, but timer tick sends SIGALRM caught by ball_move
- * build: gcc -lcurses -o bounce2d bounce2d.c set_ticker.c
+ * build: gcc -o bounce2d bounce2d.c set_ticker.c -lcurses
  *
- * @author: superxc
- * e-mail: superxc@outlook.com
+ * @author: superxcgm
+ * e-mail: superxcgm@gmail.com
  */
 
 #include <curses.h>

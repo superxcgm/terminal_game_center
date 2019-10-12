@@ -14,5 +14,5 @@ base on Understanding Unix/Linux Programming.
 ## Usage
 1. Install `curses`
 2. Download code.
-3. Compile, `gcc -lcurses bounce2d.c set_ticker.c -o bounce2d`.
+3. Compile, `gcc -o bounce2d bounce2d.c set_ticker.c -lcurses`.
 4. Run it, `./bounce2d `.

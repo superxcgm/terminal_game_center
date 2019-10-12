@@ -1,5 +1,5 @@
 snake : linklist.o set_ticker.o snake.o res.o xc_queue.o
-	gcc -lcurses -o snake -g linklist.o set_ticker.o snake.o res.o xc_queue.o
+	gcc -o snake -g linklist.o set_ticker.o snake.o res.o xc_queue.o -lcurses
 
 snake.o : snake.c snake.h
 	gcc -c -g snake.c
