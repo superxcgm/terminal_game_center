@@ -9,43 +9,41 @@ void init()
     curs_set(0);
 }
 
+void draw_line(int first_ch, int middle_ch, int last_ch, int length)
+{
+    addch(first_ch);
+    for (int i = 1; i < length / 2 - 1; i++)
+    {
+        addch(ACS_HLINE);
+        addch(middle_ch);
+    }
+    addch(ACS_HLINE);
+    addch(last_ch);
+}
+
 void draw_board()
 {
     int max_row, max_col;
-    max_row = max_col = 16;
-    // getmaxyx(stdscr, max_row, max_col);
+    max_row = max_col = 15;
+    max_col <<= 1;
 
     // print first line
-    addch(ACS_ULCORNER);
-    for (int i = 1; i < max_col - 1; i++)
-    {
-        addch(ACS_TTEE);
-    }
-    addch(ACS_URCORNER);
+    draw_line(ACS_ULCORNER, ACS_TTEE, ACS_URCORNER, max_col);
 
     // print middle lines
     for (int i = 1; i < max_row - 1; i++)
     {
         move(i, 0);
-        addch(ACS_LTEE);
-        for (int j = 1; j < max_col - 1; j++)
-        {
-            addch(ACS_PLUS);
-        }
-        addch(ACS_RTEE);
+        draw_line(ACS_LTEE, ACS_PLUS, ACS_RTEE, max_col);
     }
 
-    // last line
+    // print last line
     move(max_row - 1, 0);
-    addch(ACS_LLCORNER);
-    for (int i = 1; i < max_col - 1; i++)
-    {
-        addch(ACS_BTEE);
-    }
-    addch(ACS_LRCORNER);
+    draw_line(ACS_LLCORNER, ACS_BTEE, ACS_LRCORNER, max_col);
 
     mvaddch(8, 8, 'X');
-    mvaddch(8, 7, 'O');
+    mvaddch(8, 6, 'O');
+    mvaddch(7, 6, 'O');
     refresh();
 }
 
