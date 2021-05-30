@@ -1,7 +1,7 @@
 # bounce
 base on Understanding Unix/Linux Programming.
 ## Preview
-![bounce](../img/bounce.jpg)
+![bounce](img/bounce.gif)
 ## Diffs to book
 * draw boundary
 * remove use key to control speed
