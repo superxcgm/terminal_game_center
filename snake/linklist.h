@@ -1,11 +1,11 @@
-#include "xc_graph.h"
+#include "graph.h"
 #define XC_LINKLIST
 
 /* cur have a pointer that pointes to previous node */
 struct node_front{
 	struct node_front *prev;
-	struct xc_point pos;
+	Point pos;
 };
 struct node_front *add_to_head(struct node_front *head,
-	const struct xc_point *pos);
+	const Point *pos);
 void free_node_front(struct node_front *tail);
