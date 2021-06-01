@@ -14,8 +14,8 @@ set_ticker.o: set_ticker.c
 linklist.o: linklist.c linklist.h
 	$(CC) -c -g linklist.c
 
-res.o: res.c res.h
-	$(CC) -c -g res.c
+res.o: res.cpp res.h
+	$(CC) -c -g res.cpp
 
 xc_queue.o: xc_queue.c xc_queue.h
 	$(CC) -c -g xc_queue.c

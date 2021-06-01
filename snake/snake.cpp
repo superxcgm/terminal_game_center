@@ -18,14 +18,13 @@
 
 struct snake_setting setting;
 struct snake the_snake;
-int score;
 int gover;
 struct xc_queue queue_dir;
 struct xc_point fruit;
 
-struct XC_Res *res_snake;
-struct XC_Res *res_game_over;
-struct XC_Res *res_control_menu;
+Resource *res_snake;
+Resource *res_game_over;
+Resource *res_control_menu;
 
 int main(void) {
     init();
@@ -56,9 +55,10 @@ void init() {
 
 void load_all_res() {
 
-    res_snake = load_res("res/snake.res");
-    res_control_menu = load_res("res/control_menu.res");
-    res_game_over = load_res("res/game_over.res");
+    // Todo: Remove new here
+    res_snake = new Resource("res/snake.res");
+    res_control_menu = new Resource("res/control_menu.res");
+    res_game_over = new Resource("res/game_over.res");
 }
 
 void before_destory() {
@@ -73,11 +73,13 @@ int draw_menu() {
 
     clear();
 
-    for (i = 0; i < res_snake->cnt; ++i)
-        mvaddstr(i + 3, 3, res_snake->data[i]);
-    addstr("   V"VERSION); /* strcat */
+    // Todo: remove this logic to res or some display layer
+    for (i = 0; i < res_snake->line_count(); ++i)
+        mvaddstr(i + 3, 3, res_snake->get_line(i).c_str());
+
+    addstr("   V" VERSION); /* strcat */
     draw_border('*');
-    control_menu_base = 3 + res_snake->cnt + 3;
+    control_menu_base = 3 + res_snake->line_count() + 3;
     setting.level = 1;
     setting.border = BORDER_ON;
     draw_control_menu(0, control_menu_base); /* 0=>base, 1=>control part */
@@ -128,7 +130,6 @@ void on_game() {
     int ch;
     int pre_ch;
     int delay;
-    score = 0;
     gover = 1;
     if (xc_queue_init(&queue_dir) == 0) {
         before_destory();
@@ -451,9 +452,9 @@ void game_over() {
     signal(SIGALRM, SIG_IGN);
     set_ticker(0); /* do not redraw snake any more */
 
-    left_offset = (WIN_COLS - strlen(res_game_over->data[0])) / 2;
-    for (i = 0; i < res_game_over->cnt; ++i)
-        mvaddstr(3 + i, left_offset, res_game_over->data[i]);
+    left_offset = (WIN_COLS - strlen(res_game_over->get_line(0).c_str())) / 2;
+    for (i = 0; i < res_game_over->line_count(); ++i)
+        mvaddstr(3 + i, left_offset, res_game_over->get_line(i).c_str());
     gover = 1;
     /* free storage */
     free_node_front(the_snake.tail);
@@ -469,8 +470,8 @@ void draw_control_menu(int flag, int base) {
     switch (flag) {
         case 0:
 
-            for (i = 0; i < res_control_menu->cnt; ++i)
-                mvaddstr(base + i, left_offset, res_control_menu->data[i]);
+            for (i = 0; i < res_control_menu->line_count(); ++i)
+                mvaddstr(base + i, left_offset, res_control_menu->get_line(i).c_str());
             break;
         case 1:
             if (setting.border == BORDER_ON) attron(A_BOLD);
