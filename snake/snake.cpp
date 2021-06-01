@@ -5,13 +5,13 @@
  * 20170710
  * v0.5
  */
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <curses.h>
-#include <string.h>
-#include <signal.h>
+#include <cstring>
+#include <csignal>
 #include <sys/time.h>
-#include <time.h>
+#include <ctime>
 #include "snake.h"
 #include "res.h"
 #include "xc_queue.h"
@@ -26,7 +26,7 @@ Resource *res_snake;
 Resource *res_game_over;
 Resource *res_control_menu;
 
-int main(void) {
+int main(int argc, char **argv) {
     init();
     while (draw_menu());
     before_destory();
@@ -43,7 +43,7 @@ void init() {
         exit(1);
     }
     load_all_res();
-    srand(time(0));
+    srand(time(nullptr));
     cbreak(); /* donot buffer input */
     noecho();
     curs_set(0); /* donot display cursor */
@@ -85,7 +85,7 @@ int draw_menu() {
     draw_control_menu(0, control_menu_base); /* 0=>base, 1=>control part */
     draw_control_menu(1, control_menu_base);
     refresh();
-    while (1) {
+    while (true) {
         ch = getch();
         switch (ch) {
             case KEY_LEFT:
@@ -115,11 +115,11 @@ int draw_menu() {
             case 'q': /* quit */
             case 'Q':
                 return 0;
-                break;
             case ' ':
             case '\n':
                 on_game();
                 return 1;    /* reenter menu */
+            default:
                 break;
         }
     }
@@ -143,7 +143,7 @@ void on_game() {
     the_snake.head = (struct node_front *) malloc(sizeof(struct node_front));
     the_snake.head->pos.x = INIT_X;
     the_snake.head->pos.y = INIT_Y;
-    the_snake.head->prev = NULL;
+    the_snake.head->prev = nullptr;
     the_snake.tail = (struct node_front *) malloc(sizeof(struct node_front));
     the_snake.tail->pos.y = the_snake.head->pos.y;
     the_snake.tail->pos.x = the_snake.head->pos.x - INIT_LEN;
@@ -160,7 +160,7 @@ void on_game() {
     delay = 20 * (10 - setting.level);
     set_ticker(delay);    /* speed of snake would not change during play */
     pre_ch = ' ';
-    while (1) {
+    while (true) {
         ch = getch();
         if (ch == pre_ch)    /* ignore duplication key press */
             continue;
@@ -169,10 +169,10 @@ void on_game() {
                 case 'm':
                 case 'M':
                     return;    /* back to menu */
-                    break;
                 case '\n':
                     on_game();    /* just recursion */
                     return;
+                default:
                     break;
             }
         switch (ch) {
@@ -212,15 +212,15 @@ void on_game() {
             case 'Q':
                 before_destory();
                 exit(0);
-                break;
 #endif
+            default:
+                break;
         }
     }
 }
 
 /* only support horizontail or vertical line */
 void draw_body_line(const struct xc_point *p1, const struct xc_point *p2) {
-    int dir;
     int i;
     const struct xc_point *tmp_point;
     if (p1->x == p2->x) {    /* vertical */
@@ -314,7 +314,7 @@ void redraw_snack(int signum) {
     struct timeval tv2;
     struct xc_point prev_pos;
 
-    gettimeofday(&tv1, NULL);
+    gettimeofday(&tv1, nullptr);
     /* need veer */
     if (xc_queue_get(&queue_dir, &new_dir) &&
         the_snake.dir != new_dir &&
@@ -414,7 +414,7 @@ void redraw_snack(int signum) {
                                      1 : -1;
     }
     refresh();
-    gettimeofday(&tv2, NULL);
+    gettimeofday(&tv2, nullptr);
     // fprintf(stderr, "this signal handle take %f ms.\n", tv2.tv_sec * 1000 + tv2.tv_usec / 1000.0 - (tv1.tv_sec * 1000 + tv1.tv_usec / 1000.0));
     /* less than 1ms on my machine */
     // print_snake();
@@ -488,6 +488,8 @@ void draw_control_menu(int flag, int base) {
                         i + '0');
                 if (i == setting.level) attroff(A_BOLD);
             }
+            break;
+        default:
             break;
     }
     refresh();
