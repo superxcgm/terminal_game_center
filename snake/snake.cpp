@@ -20,7 +20,7 @@ struct snake_setting setting;
 struct snake the_snake;
 int gover;
 struct xc_queue queue_dir;
-struct xc_point fruit;
+Point fruit;
 
 Resource *res_snake;
 Resource *res_game_over;
@@ -220,9 +220,9 @@ void on_game() {
 }
 
 /* only support horizontail or vertical line */
-void draw_body_line(const struct xc_point *p1, const struct xc_point *p2) {
+void draw_body_line(const Point *p1, const Point *p2) {
     int i;
-    const struct xc_point *tmp_point;
+    const Point *tmp_point;
     if (p1->x == p2->x) {    /* vertical */
         /* make sure that p1->y < p2->y*/
         if (p1->y > p2->y) {
@@ -264,7 +264,7 @@ void draw_fruit() {
 int is_hit_body(int flag) {
     struct node_front *p;
     struct node_front *prev;
-    struct xc_point *des;
+    Point *des;
 
     p = the_snake.tail;
     prev = p->prev;
@@ -312,7 +312,7 @@ void redraw_snack(int signum) {
     struct node_front *prev;
     struct timeval tv1;
     struct timeval tv2;
-    struct xc_point prev_pos;
+    Point prev_pos;
 
     gettimeofday(&tv1, nullptr);
     /* need veer */
@@ -322,7 +322,7 @@ void redraw_snack(int signum) {
           (the_snake.dir == DIR_RIGHT && new_dir == DIR_LEFT) ||
           (the_snake.dir == DIR_UP && new_dir == DIR_DOWN) ||
           (the_snake.dir == DIR_DOWN && new_dir == DIR_UP))) {
-        struct xc_point pos;
+        Point pos;
 
         pos = the_snake.head->pos;
         the_snake.dir = new_dir;
@@ -352,7 +352,7 @@ void redraw_snack(int signum) {
         if (setting.border == BORDER_ON)
             goto gmover;
         else {
-            struct xc_point pos;
+            Point pos;
 
             mvaddch(the_snake.head->pos.y, the_snake.head->pos.x,
                     SYMBOL_BORDER_OFF);

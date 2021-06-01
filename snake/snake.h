@@ -52,7 +52,7 @@ int is_hit_body(int flag);
 
 void game_over();
 
-void draw_body_line(const struct xc_point *p1, const struct xc_point *p2);
+void draw_body_line(const Point *p1, const Point *p2);
 
 void draw_border(char ch);
 

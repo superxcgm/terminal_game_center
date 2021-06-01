@@ -11,8 +11,8 @@ snake.o: snake.cpp snake.h
 set_ticker.o: set_ticker.c
 	$(CC) -c -g set_ticker.c
 
-linklist.o: linklist.c linklist.h
-	$(CC) -c -g linklist.c
+linklist.o: linklist.cpp linklist.h
+	$(CC) -c -g linklist.cpp
 
 res.o: res.cpp res.h
 	$(CC) -c -g res.cpp
@@ -22,4 +22,4 @@ xc_queue.o: xc_queue.c xc_queue.h
 
 .PHONY: clean
 clean:
-	rm snake snake.o set_ticker.o linklist.o res.o xc_queue.o
+	-rm snake *.o
