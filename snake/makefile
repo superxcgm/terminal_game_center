@@ -1,20 +1,25 @@
-snake : linklist.o set_ticker.o snake.o res.o xc_queue.o
-	gcc -o snake -g linklist.o set_ticker.o snake.o res.o xc_queue.o -lcurses
+CC = gcc
 
-snake.o : snake.c snake.h
-	gcc -c -g snake.c
+all: snake
 
-set_ticker.o : set_ticker.c
-	gcc -c -g set_ticker.c
+snake: linklist.o set_ticker.o snake.o res.o xc_queue.o
+	$(CC) -o snake -g linklist.o set_ticker.o snake.o res.o xc_queue.o -lcurses
 
-linklist.o : linklist.c linklist.h
-	gcc -c -g linklist.c
+snake.o: snake.c snake.h
+	$(CC) -c -g snake.c
 
-res.o : res.c res.h
-	gcc -c -g res.c
+set_ticker.o: set_ticker.c
+	$(CC) -c -g set_ticker.c
 
-xc_queue.o : xc_queue.c xc_queue.h
-	gcc -c -g xc_queue.c
+linklist.o: linklist.c linklist.h
+	$(CC) -c -g linklist.c
 
-clean :
+res.o: res.c res.h
+	$(CC) -c -g res.c
+
+xc_queue.o: xc_queue.c xc_queue.h
+	$(CC) -c -g xc_queue.c
+
+.PHONY: clean
+clean:
 	rm snake snake.o set_ticker.o linklist.o res.o xc_queue.o
