@@ -1,6 +1,7 @@
 #ifndef XC_LINKLIST
 
-#include "linklist.h"
+#include <list>
+#include "graph.h"
 
 #endif
 
@@ -29,11 +30,72 @@ struct snake_setting {
     int border;
 };
 
-struct snake {
+class snake {
+public:
     /* use Singly Linked List to storage veer points of snake */
-    struct node_front *head;
-    struct node_front *tail;
+    Point head() {
+        return data.front();
+    }
+
+    Point tail() {
+        return data.back();
+    }
+
+    std::reverse_iterator<std::list<Point, std::allocator<Point>>::iterator> tailRef() {
+        return data.rbegin();
+    }
+
+    std::reverse_iterator<std::list<Point, std::allocator<Point>>::iterator> headRef() {
+        return data.rend();
+    }
+
+    void add_to_head(const Point &p) {
+        data.push_front(p);
+    }
+
+    void add(const Point& p) {
+        data.push_back(p);
+    }
+
+    void head_move_left() {
+        auto &head = data.front();
+        head.x--;
+    }
+
+    void head_move_right() {
+        auto &head = data.front();
+        head.x++;
+    }
+
+    void head_move_down() {
+        auto &head = data.front();
+        head.y++;
+    }
+
+    void head_move_up() {
+        auto &head = data.front();
+        head.y--;
+    }
+
+    void update_head_x(int x) {
+        auto &head = data.front();
+        head.x = x;
+    }
+
+    void update_head_y(int y) {
+        auto &head = data.front();
+        head.y = y;
+    }
+
+    void update_head(const Point& p) {
+        auto &head = data.front();
+        head.x = p.x;
+        head.y = p.y;
+    }
+
     int dir;
+private:
+    std::list<Point> data;
 };
 
 void init();
