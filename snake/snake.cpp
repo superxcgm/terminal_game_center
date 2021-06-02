@@ -1,5 +1,5 @@
 /*
- * snake.c
+ * Snake.c
  * @author superxc
  * e-mail: superxc@outlook.com
  * 20170710
@@ -17,7 +17,7 @@
 #include <queue>
 
 struct snake_setting setting;
-snake the_snake;
+Snake the_snake;
 int gover;
 std::queue<int> queue_dir;
 Point fruit;
@@ -56,7 +56,7 @@ void init() {
 void load_all_res() {
 
     // Todo: Remove new here
-    res_snake = new Resource("res/snake.res");
+    res_snake = new Resource("res/Snake.res");
     res_control_menu = new Resource("res/control_menu.res");
     res_game_over = new Resource("res/game_over.res");
 }
@@ -134,28 +134,21 @@ void on_game() {
     clear(); /* clear screen */
     draw_border(setting.border == BORDER_ON ?
                 SYMBOL_BORDER_ON : SYMBOL_BORDER_OFF);
-    /* init snake */
-    the_snake.add({INIT_X, INIT_Y});
-    the_snake.add({INIT_X - INIT_LEN, INIT_Y});
-    the_snake.dir = DIR_RIGHT;
 
-    auto head = the_snake.head();
-    auto tail = the_snake.tail();
-
-    /* draw snake */
-    draw_body_line(&head, &tail);
-    mvaddch(head.y, head.x, SYMBOL_SNAKE_HEAD);
+    /* draw Snake */
+    the_snake.draw();
 
     draw_fruit();
 
     signal(SIGALRM, redraw_snack);
     delay = 20 * (10 - setting.level);
-    set_ticker(delay);    /* speed of snake would not change during play */
+    set_ticker(delay);    /* speed of Snake would not change during play */
     pre_ch = ' ';
     while (true) {
         ch = getch();
         if (ch == pre_ch)    /* ignore duplication key press */
             continue;
+        pre_ch = ch;
         if (gover)
             switch (ch) {
                 case 'm':
@@ -174,30 +167,22 @@ void on_game() {
                 /* use queue to buffer direction change request, if change
                 the_snake.direction directly, later request will cover the
                 previous request. */
-                if (pre_ch == KEY_DOWN) continue; /* forbid reverse */
                 queue_dir.push(DIR_UP);
-                pre_ch = KEY_UP;
                 break;
             case 's':
             case 'S':
             case KEY_DOWN:
-                if (pre_ch == KEY_UP) continue; /* forbid reverse */
                 queue_dir.push(DIR_DOWN);
-                pre_ch = KEY_DOWN;
                 break;
             case 'a':
             case 'A':
             case KEY_LEFT:
-                if (pre_ch == KEY_RIGHT) continue; /* forbid reverse */
                 queue_dir.push(DIR_LEFT);
-                pre_ch = KEY_LEFT;
                 break;
             case 'd':
             case 'D':
             case KEY_RIGHT:
-                if (pre_ch == KEY_LEFT) continue; /* forbid reverse */
                 queue_dir.push(DIR_RIGHT);
-                pre_ch = KEY_RIGHT;
                 break;
 #ifdef ONDEBUG
             case 'q':
@@ -208,33 +193,6 @@ void on_game() {
             default:
                 break;
         }
-    }
-}
-
-/* only support horizontail or vertical line */
-void draw_body_line(const Point *p1, const Point *p2) {
-    int i;
-    const Point *tmp_point;
-    if (p1->x == p2->x) {    /* vertical */
-        /* make sure that p1->y < p2->y*/
-        if (p1->y > p2->y) {
-            tmp_point = p1;
-            p1 = p2;
-            p2 = tmp_point;
-        }
-        for (i = p1->y; i <= p2->y; ++i) {
-            move(i, p1->x);
-            addch(SYMBOL_SNAKE_BODY);
-        }
-
-    } else if (p1->y == p2->y) {    /* horizontal */
-        if (p1->x > p2->x) {
-            tmp_point = p1;
-            p1 = p2;
-            p2 = tmp_point;
-        }
-        move(p1->y, p1->x);
-        for (i = p1->x; i <= p2->x; ++i) addch(SYMBOL_SNAKE_BODY);
     }
 }
 
@@ -303,86 +261,57 @@ void redraw_snack(int signum) {
     // int has_veer = 0;
     struct timeval tv1;
     struct timeval tv2;
-    Point prev_pos{0, 0};
+//    Point prev_pos{0, 0};
 
     gettimeofday(&tv1, nullptr);
     /* need veer */
-    int new_dir;
-    bool not_empty = false;
     if (!queue_dir.empty()) {
-        new_dir = queue_dir.front();
+        int new_direction = queue_dir.front();
         queue_dir.pop();
-        not_empty = true;
+        the_snake.change_direction(new_direction);
     }
-    if (not_empty &&
-        the_snake.dir != new_dir &&
-        !((the_snake.dir == DIR_LEFT && new_dir == DIR_RIGHT) ||
-          (the_snake.dir == DIR_RIGHT && new_dir == DIR_LEFT) ||
-          (the_snake.dir == DIR_UP && new_dir == DIR_DOWN) ||
-          (the_snake.dir == DIR_DOWN && new_dir == DIR_UP))) {
-        Point pos = the_snake.head();
-        the_snake.dir = new_dir;
-        the_snake.add_to_head(pos);
-        // has_veer = 1;
-    }
-    prev_pos = the_snake.head();
-    /* head node step forward */
-    mvaddch(the_snake.head().y, the_snake.head().x, SYMBOL_SNAKE_BODY);
-    switch (the_snake.dir) {
-        case DIR_LEFT:
-            the_snake.head_move_left();
-            break;
-        case DIR_RIGHT:
-            the_snake.head_move_right();
-            break;
-        case DIR_DOWN:
-            the_snake.head_move_down();
-            break;
-        case DIR_UP:
-            the_snake.head_move_up();
-            break;
-    }
-    mvaddch(the_snake.head().y, the_snake.head().x, SYMBOL_SNAKE_HEAD);
+    the_snake.update();
+//    prev_pos = the_snake.head();
     /* hit wall  or hit body */
-    if (is_hit_wall()) {
-        if (setting.border == BORDER_ON)
-            goto gmover;
-        else {
-            Point pos;
-
-            mvaddch(the_snake.head().y, the_snake.head().x,
-                    SYMBOL_BORDER_OFF);
-
-            if (the_snake.head().x == WIN_COLS - 1)
-                the_snake.update_head_x(1);
-            if (the_snake.head().x == 0)
-                the_snake.update_head_x(WIN_COLS - 2);
-
-            if (the_snake.head().y == WIN_LINES - 1)
-                the_snake.update_head_y(1);
-            if (the_snake.head().y == 0)
-                the_snake.update_head_y(WIN_LINES - 2);
-
-            pos = the_snake.head();        /* other side of border */
-            // fprintf(stderr, "Points in other side: (%d, %d)\n", pos.x, pos.y);
-            the_snake.update_head(prev_pos);    /* this side of border */
-            // fprintf(stderr, "Points in this side: (%d, %d)\n", prev_pos.x, prev_pos.y);
-            /* generate two points to across a border */
-            the_snake.add_to_head(pos);
-            the_snake.add_to_head(pos);
-        }
-    }
-    if (is_hit_body(1)) goto gmover;
+//    if (is_hit_wall()) {
+//        if (setting.border == BORDER_ON)
+//            goto gmover;
+//        else {
+//            Point pos;
+//
+//            mvaddch(the_snake.head().y, the_snake.head().x,
+//                    SYMBOL_BORDER_OFF);
+//
+//            if (the_snake.head().x == WIN_COLS - 1)
+//                the_snake.update_head_x(1);
+//            if (the_snake.head().x == 0)
+//                the_snake.update_head_x(WIN_COLS - 2);
+//
+//            if (the_snake.head().y == WIN_LINES - 1)
+//                the_snake.update_head_y(1);
+//            if (the_snake.head().y == 0)
+//                the_snake.update_head_y(WIN_LINES - 2);
+//
+//            pos = the_snake.head();        /* other side of border */
+//            // fprintf(stderr, "Points in other side: (%d, %d)\n", pos.x, pos.y);
+//            the_snake.update_head(prev_pos);    /* this side of border */
+//            // fprintf(stderr, "Points in this side: (%d, %d)\n", prev_pos.x, prev_pos.y);
+//            /* generate two points to across a border */
+//            the_snake.add_to_head(pos);
+//            the_snake.add_to_head(pos);
+//        }
+//    }
+//    if (is_hit_body(1)) goto gmover;
 
     /* eat fruit */
-    if (the_snake.head().x == fruit.x && the_snake.head().y == fruit.y) {
-        draw_fruit();
-        /* when eat a fruit, the length of snake add one, so tail do not move
-         forward */
-        return;
-    }
+//    if (the_snake.head().x == fruit.x && the_snake.head().y == fruit.y) {
+//        draw_fruit();
+//        /* when eat a fruit, the length of Snake add one, so tail do not move
+//         forward */
+//        return;
+//    }
     /* last node step forward */
-    mvaddch(the_snake.tail().y, the_snake.tail().x, SYMBOL_BLANK);
+//    mvaddch(the_snake.tail().y, the_snake.tail().x, SYMBOL_BLANK);
 //    auto prev = std::prev(the_snake.tailRef());
 
 //    if (prev->y == the_snake.tail().y) {
@@ -425,7 +354,7 @@ void redraw_snack(int signum) {
 void print_snake() {
 //    struct node_front *prev;
 //    prev = the_snake.tail;
-//    fprintf(stderr, "snake:\n");
+//    fprintf(stderr, "Snake:\n");
 //    while (prev) {
 //        fprintf(stderr, "(%d, %d)\n", prev->pos.x, prev->pos.y);
 //        prev = prev->prev;
@@ -440,13 +369,35 @@ int is_hit_wall() {
     return 0;
 }
 
+void log(const char* fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+
+    while (*fmt != '\0') {
+        if (*fmt == 'd') {
+            int i = va_arg(args, int);
+            std::cout << i << '\n';
+        } else if (*fmt == 'c') {
+            // note automatic conversion to integral type
+            int c = va_arg(args, int);
+            std::cout << static_cast<char>(c) << '\n';
+        } else if (*fmt == 'f') {
+            double d = va_arg(args, double);
+            std::cout << d << '\n';
+        }
+        ++fmt;
+    }
+
+    va_end(args);
+}
+
 void game_over() {
     int set_ticker(int n_msecs);
     int i;
     int left_offset;
 
     signal(SIGALRM, SIG_IGN);
-    set_ticker(0); /* do not redraw snake any more */
+    set_ticker(0); /* do not redraw Snake any more */
 
     left_offset = (WIN_COLS - strlen(res_game_over->get_line(0).c_str())) / 2;
     for (i = 0; i < res_game_over->line_count(); ++i)

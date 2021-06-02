@@ -1,14 +1,14 @@
-# snake
+# Snake
 A typical game, UI and experience reference `nsnake`.
 ## Preview
-![snake](../img/snake.jpg)
+![Snake](../img/Snake.jpg)
 ## Feature
 * Use linklist to store veer point.
-* Use interval timer to redraw snake repeatedly.
+* Use interval timer to redraw Snake repeatedly.
 
 ## Todo List
 * score
 
 ## Usage
 1. make
-2. ./snake
+2. ./Snake

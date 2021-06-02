@@ -1,9 +1,11 @@
-#ifndef XC_LINKLIST
+#ifndef SNAKE_SNAKE_H
+#define SNAKE_SNAKE_H
 
 #include <list>
 #include "graph.h"
+#include <cstdarg>
 
-#endif
+
 
 #define WIN_LINES            24
 #define WIN_COLS            80
@@ -30,9 +32,67 @@ struct snake_setting {
     int border;
 };
 
-class snake {
+class Snake {
 public:
-    /* use Singly Linked List to storage veer points of snake */
+
+    Snake() {
+        data.push_back({INIT_X, INIT_Y});
+        data.push_back({INIT_X - INIT_LEN, INIT_Y});
+        dir = DIR_RIGHT;
+    }
+
+    void draw() {
+        auto head = data.front();
+        mvaddch(head.y, head.x, SYMBOL_SNAKE_HEAD);
+        for (auto it = data.begin(); ; it++) {
+            auto next = std::next(it);
+            if (next == data.end()) {
+                break;
+            }
+            if (it->x == next->x) {
+                mvvline(std::min(it->y, next->y), it->x, SYMBOL_SNAKE_BODY, std::abs(it->y - next->y) + 1);
+            } else {
+                mvhline(it->y, std::min(it->x, next->x), SYMBOL_SNAKE_BODY, std::abs(it->x - next->x) + 1);
+            }
+        }
+    }
+
+    void update() {
+        auto &head = data.front();
+        mvaddch(head.y, head.x, SYMBOL_SNAKE_BODY);
+
+        switch (dir) {
+            case DIR_LEFT:
+                head.x--;
+                break;
+            case DIR_RIGHT:
+                head.x++;
+                break;
+            case DIR_DOWN:
+                head.y++;
+                break;
+            case DIR_UP:
+                head.y--;
+                break;
+        }
+        mvaddch(head.y, head.x, SYMBOL_SNAKE_HEAD);
+
+        auto tailRef = data.rbegin();
+        auto pre_tail = std::next(tailRef);
+        fprintf(stderr, "tail: (%d, %d), pre_tail: (%d, %d)\n", tailRef->x, tailRef->y, pre_tail->x, pre_tail->y);
+//        mvaddch(tailRef->y, tailRef->x, SYMBOL_BLANK);
+
+    }
+    
+    void change_direction(int new_direction) {
+        if (valid_change_direction(new_direction))
+            return;
+        if (dir == new_direction)
+            return;
+        dir = new_direction;
+        data.push_front(data.front());
+    }
+
     Point head() {
         return data.front();
     }
@@ -53,30 +113,6 @@ public:
         data.push_front(p);
     }
 
-    void add(const Point& p) {
-        data.push_back(p);
-    }
-
-    void head_move_left() {
-        auto &head = data.front();
-        head.x--;
-    }
-
-    void head_move_right() {
-        auto &head = data.front();
-        head.x++;
-    }
-
-    void head_move_down() {
-        auto &head = data.front();
-        head.y++;
-    }
-
-    void head_move_up() {
-        auto &head = data.front();
-        head.y--;
-    }
-
     void update_head_x(int x) {
         auto &head = data.front();
         head.x = x;
@@ -91,10 +127,18 @@ public:
         auto &head = data.front();
         head.x = p.x;
         head.y = p.y;
+        printf()
     }
 
     int dir;
 private:
+    bool valid_change_direction(int new_direction) {
+        return !((dir == DIR_LEFT && new_direction == DIR_RIGHT) ||
+        (dir == DIR_RIGHT && new_direction == DIR_LEFT) ||
+        (dir == DIR_UP && new_direction == DIR_DOWN) ||
+        (dir == DIR_DOWN && new_direction == DIR_UP));
+    }
+
     std::list<Point> data;
 };
 
@@ -114,8 +158,6 @@ int is_hit_body(int flag);
 
 void game_over();
 
-void draw_body_line(const Point *p1, const Point *p2);
-
 void draw_border(char ch);
 
 void draw_control_menu(int flag, int base);
@@ -125,3 +167,8 @@ void on_game();
 void redraw_snack(int signum);
 
 void load_all_res();
+
+void log(const char* fmt, ...);
+
+
+#endif

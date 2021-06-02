@@ -18,3 +18,8 @@ res.o: res.cpp res.h
 .PHONY: clean
 clean:
 	-rm snake *.o
+
+.PHONY: debug
+
+debug:
+	./snake 2> log.txt
