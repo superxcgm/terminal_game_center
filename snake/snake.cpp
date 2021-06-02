@@ -14,12 +14,12 @@
 #include <ctime>
 #include "snake.h"
 #include "res.h"
-#include "xc_queue.h"
+#include <queue>
 
 struct snake_setting setting;
 struct snake the_snake;
 int gover;
-struct xc_queue queue_dir;
+std::queue<int> queue_dir;
 Point fruit;
 
 Resource *res_snake;
@@ -131,11 +131,6 @@ void on_game() {
     int pre_ch;
     int delay;
     gover = 1;
-    if (xc_queue_init(&queue_dir) == 0) {
-        before_destory();
-        printf("Can not initialize queue_dir.\n");
-        exit(1);
-    }
     clear(); /* clear screen */
     draw_border(setting.border == BORDER_ON ?
                 SYMBOL_BORDER_ON : SYMBOL_BORDER_OFF);
@@ -183,28 +178,28 @@ void on_game() {
                 the_snake.direction directly, later request will cover the
                 previous request. */
                 if (pre_ch == KEY_DOWN) continue; /* forbid reverse */
-                xc_queue_insert(&queue_dir, DIR_UP);
+                queue_dir.push(DIR_UP);
                 pre_ch = KEY_UP;
                 break;
             case 's':
             case 'S':
             case KEY_DOWN:
                 if (pre_ch == KEY_UP) continue; /* forbid reverse */
-                xc_queue_insert(&queue_dir, DIR_DOWN);
+                queue_dir.push(DIR_DOWN);
                 pre_ch = KEY_DOWN;
                 break;
             case 'a':
             case 'A':
             case KEY_LEFT:
                 if (pre_ch == KEY_RIGHT) continue; /* forbid reverse */
-                xc_queue_insert(&queue_dir, DIR_LEFT);
+                queue_dir.push(DIR_LEFT);
                 pre_ch = KEY_LEFT;
                 break;
             case 'd':
             case 'D':
             case KEY_RIGHT:
                 if (pre_ch == KEY_LEFT) continue; /* forbid reverse */
-                xc_queue_insert(&queue_dir, DIR_RIGHT);
+                queue_dir.push(DIR_RIGHT);
                 pre_ch = KEY_RIGHT;
                 break;
 #ifdef ONDEBUG
@@ -307,7 +302,6 @@ int is_hit_body(int flag) {
 }
 
 void redraw_snack(int signum) {
-    int new_dir;
     // int has_veer = 0;
     struct node_front *prev;
     struct timeval tv1;
@@ -316,7 +310,14 @@ void redraw_snack(int signum) {
 
     gettimeofday(&tv1, nullptr);
     /* need veer */
-    if (xc_queue_get(&queue_dir, &new_dir) &&
+    int new_dir;
+    bool not_empty = false;
+    if (!queue_dir.empty()) {
+        new_dir = queue_dir.front();
+        queue_dir.pop();
+        not_empty = true;
+    }
+    if (not_empty &&
         the_snake.dir != new_dir &&
         !((the_snake.dir == DIR_LEFT && new_dir == DIR_RIGHT) ||
           (the_snake.dir == DIR_RIGHT && new_dir == DIR_LEFT) ||
@@ -463,7 +464,6 @@ void game_over() {
 
 void draw_control_menu(int flag, int base) {
     const int left_offset = 7;
-    const int height = 10;
     const int width = 53;
     int i;
     /* 0=>base, 1=>control part */
