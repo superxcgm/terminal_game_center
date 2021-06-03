@@ -48,7 +48,7 @@ public:
             if (next == data.end()) {
                 break;
             }
-            if (it->x == next->x) {
+            if (is_vertical_line(*it, *next)) {
                 mvvline(std::min(it->y, next->y), it->x, SYMBOL_SNAKE_BODY, std::abs(it->y - next->y) + 1);
             } else {
                 mvhline(it->y, std::min(it->x, next->x), SYMBOL_SNAKE_BODY, std::abs(it->x - next->x) + 1);
@@ -81,15 +81,14 @@ public:
         mvaddch(tailRef->y, tailRef->x, SYMBOL_BLANK);
 
         print_snake();
-        if (tailRef->y == pre_tail->y) {
-            // horizontal line
+        if (is_horizontal_line(*tailRef, *pre_tail)) {
             // todo: border and refactor
             if (std::abs(tailRef->x - pre_tail->x) == 1) {
                 data.pop_back();
             } else {
                 tailRef->x += pre_tail->x > tailRef->x ? 1 : -1;
             }
-        } else if (tailRef->x == pre_tail->x) {
+        } else if (is_vertical_line(*tailRef, *pre_tail)) {
             // vertical
             if (std::abs(tailRef->y - pre_tail->y) == 1) {
                 data.pop_back();
@@ -110,10 +109,6 @@ public:
 
     Point head() {
         return data.front();
-    }
-
-    Point tail() {
-        return data.back();
     }
 
     std::reverse_iterator<std::list<Point, std::allocator<Point>>::iterator> tailRef() {
