@@ -6,7 +6,6 @@
 #include <cstdarg>
 
 
-
 #define WIN_LINES            24
 #define WIN_COLS            80
 #define VERSION                "0.5"
@@ -44,7 +43,7 @@ public:
     void draw() {
         auto head = data.front();
         mvaddch(head.y, head.x, SYMBOL_SNAKE_HEAD);
-        for (auto it = data.begin(); ; it++) {
+        for (auto it = data.begin();; it++) {
             auto next = std::next(it);
             if (next == data.end()) {
                 break;
@@ -79,11 +78,27 @@ public:
 
         auto tailRef = data.rbegin();
         auto pre_tail = std::next(tailRef);
-        fprintf(stderr, "tail: (%d, %d), pre_tail: (%d, %d)\n", tailRef->x, tailRef->y, pre_tail->x, pre_tail->y);
-//        mvaddch(tailRef->y, tailRef->x, SYMBOL_BLANK);
+//        fprintf(stderr, "tail: (%d, %d), pre_tail: (%d, %d)\n", tailRef->x, tailRef->y, pre_tail->x, pre_tail->y);
+        mvaddch(tailRef->y, tailRef->x, SYMBOL_BLANK);
 
+        if (tailRef->y == pre_tail->y) {
+            // horizontal line
+            // todo: border and refactor
+            if (std::abs(tailRef->x - pre_tail->x) == 1) {
+                data.pop_back();
+            } else {
+                tailRef->x += pre_tail->x > tailRef->x ? 1 : -1;
+            }
+        } else if (tailRef->y == pre_tail->x) {
+            // vertical
+            if (std::abs(tailRef->y - pre_tail->y) == 1) {
+                data.pop_back();
+            } else {
+                tailRef->y += pre_tail->y > tailRef->y ? 1 : -1;
+            }
+        }
     }
-    
+
     void change_direction(int new_direction) {
         if (valid_change_direction(new_direction))
             return;
@@ -123,20 +138,19 @@ public:
         head.y = y;
     }
 
-    void update_head(const Point& p) {
+    void update_head(const Point &p) {
         auto &head = data.front();
         head.x = p.x;
         head.y = p.y;
-        printf()
     }
 
     int dir;
 private:
     bool valid_change_direction(int new_direction) {
         return !((dir == DIR_LEFT && new_direction == DIR_RIGHT) ||
-        (dir == DIR_RIGHT && new_direction == DIR_LEFT) ||
-        (dir == DIR_UP && new_direction == DIR_DOWN) ||
-        (dir == DIR_DOWN && new_direction == DIR_UP));
+                 (dir == DIR_RIGHT && new_direction == DIR_LEFT) ||
+                 (dir == DIR_UP && new_direction == DIR_DOWN) ||
+                 (dir == DIR_DOWN && new_direction == DIR_UP));
     }
 
     std::list<Point> data;
@@ -167,8 +181,6 @@ void on_game();
 void redraw_snack(int signum);
 
 void load_all_res();
-
-void log(const char* fmt, ...);
 
 
 #endif
