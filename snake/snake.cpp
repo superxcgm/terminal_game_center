@@ -351,16 +351,6 @@ void redraw_snack(int signum) {
     game_over();
 }
 
-void print_snake() {
-//    struct node_front *prev;
-//    prev = the_snake.tail;
-//    fprintf(stderr, "Snake:\n");
-//    while (prev) {
-//        fprintf(stderr, "(%d, %d)\n", prev->pos.x, prev->pos.y);
-//        prev = prev->prev;
-//    }
-}
-
 int is_hit_wall() {
     if (the_snake.head().x == 0) return 1;
     if (the_snake.head().y == 0) return 1;

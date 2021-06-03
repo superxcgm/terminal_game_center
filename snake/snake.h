@@ -37,7 +37,7 @@ public:
     Snake() {
         data.push_back({INIT_X, INIT_Y});
         data.push_back({INIT_X - INIT_LEN, INIT_Y});
-        dir = DIR_RIGHT;
+        direction = DIR_RIGHT;
     }
 
     void draw() {
@@ -60,7 +60,7 @@ public:
         auto &head = data.front();
         mvaddch(head.y, head.x, SYMBOL_SNAKE_BODY);
 
-        switch (dir) {
+        switch (direction) {
             case DIR_LEFT:
                 head.x--;
                 break;
@@ -78,9 +78,9 @@ public:
 
         auto tailRef = data.rbegin();
         auto pre_tail = std::next(tailRef);
-//        fprintf(stderr, "tail: (%d, %d), pre_tail: (%d, %d)\n", tailRef->x, tailRef->y, pre_tail->x, pre_tail->y);
         mvaddch(tailRef->y, tailRef->x, SYMBOL_BLANK);
 
+        print_snake();
         if (tailRef->y == pre_tail->y) {
             // horizontal line
             // todo: border and refactor
@@ -89,7 +89,7 @@ public:
             } else {
                 tailRef->x += pre_tail->x > tailRef->x ? 1 : -1;
             }
-        } else if (tailRef->y == pre_tail->x) {
+        } else if (tailRef->x == pre_tail->x) {
             // vertical
             if (std::abs(tailRef->y - pre_tail->y) == 1) {
                 data.pop_back();
@@ -100,11 +100,11 @@ public:
     }
 
     void change_direction(int new_direction) {
-        if (valid_change_direction(new_direction))
+        if (!valid_change_direction(new_direction))
             return;
-        if (dir == new_direction)
+        if (direction == new_direction)
             return;
-        dir = new_direction;
+        direction = new_direction;
         data.push_front(data.front());
     }
 
@@ -124,33 +124,20 @@ public:
         return data.rend();
     }
 
-    void add_to_head(const Point &p) {
-        data.push_front(p);
-    }
-
-    void update_head_x(int x) {
-        auto &head = data.front();
-        head.x = x;
-    }
-
-    void update_head_y(int y) {
-        auto &head = data.front();
-        head.y = y;
-    }
-
-    void update_head(const Point &p) {
-        auto &head = data.front();
-        head.x = p.x;
-        head.y = p.y;
-    }
-
-    int dir;
+    int direction;
 private:
     bool valid_change_direction(int new_direction) {
-        return !((dir == DIR_LEFT && new_direction == DIR_RIGHT) ||
-                 (dir == DIR_RIGHT && new_direction == DIR_LEFT) ||
-                 (dir == DIR_UP && new_direction == DIR_DOWN) ||
-                 (dir == DIR_DOWN && new_direction == DIR_UP));
+        return !((direction == DIR_LEFT && new_direction == DIR_RIGHT) ||
+                 (direction == DIR_RIGHT && new_direction == DIR_LEFT) ||
+                 (direction == DIR_UP && new_direction == DIR_DOWN) ||
+                 (direction == DIR_DOWN && new_direction == DIR_UP));
+    }
+
+    void print_snake() {
+        fprintf(stderr, "Snake:\n");
+        for (auto & it : data) {
+            fprintf(stderr, "(%d, %d)\n", it.x, it.y);
+        }
     }
 
     std::list<Point> data;
@@ -165,8 +152,6 @@ int draw_menu();
 void draw_fruit();
 
 int is_hit_wall();
-
-void print_snake();
 
 int is_hit_body(int flag);
 
