@@ -26,6 +26,8 @@ Resource *res_snake;
 Resource *res_game_over;
 Resource *res_control_menu;
 
+Rect rect(0, 0, WIN_COLS, WIN_LINES);
+
 int main(int argc, char **argv) {
     init();
     while (draw_menu());
@@ -104,11 +106,13 @@ int draw_menu() {
                 if (setting.border == BORDER_OFF) {
                     setting.border = BORDER_ON;
                     draw_control_menu(1, control_menu_base);
+                    rect.change_to_real();
                 }
                 break;
             case KEY_DOWN:
                 if (setting.border == BORDER_ON) {
                     setting.border = BORDER_OFF;
+                    rect.change_to_fake();
                     draw_control_menu(1, control_menu_base);
                 }
                 break;
@@ -132,8 +136,7 @@ void on_game() {
     int delay;
     gover = 1;
     clear(); /* clear screen */
-    draw_border(setting.border == BORDER_ON ?
-                SYMBOL_BORDER_ON : SYMBOL_BORDER_OFF);
+    rect.draw();
 
     /* draw Snake */
     the_snake.draw();
@@ -349,14 +352,6 @@ void redraw_snack(int signum) {
     mvaddch(the_snake.head().y, the_snake.head().x, 'x');
     attroff(A_BOLD);
     game_over();
-}
-
-int is_hit_wall() {
-    if (the_snake.head().x == 0) return 1;
-    if (the_snake.head().y == 0) return 1;
-    if (the_snake.head().x == WIN_COLS - 1) return 1;
-    if (the_snake.head().y == WIN_LINES - 1) return 1;
-    return 0;
 }
 
 void game_over() {

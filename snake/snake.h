@@ -22,8 +22,6 @@
 #define SYMBOL_SNAKE_HEAD    '@'
 #define SYMBOL_FRUIT        '$'
 #define SYMBOL_BLANK        ' '
-#define SYMBOL_BORDER_ON    '#'
-#define SYMBOL_BORDER_OFF    '.'
 #define ONDEBUG
 
 struct snake_setting {
@@ -80,10 +78,16 @@ public:
         auto pre_tail = std::next(tailRef);
         mvaddch(tailRef->y, tailRef->x, SYMBOL_BLANK);
 
-        print_snake();
+        if (is_hit_wall()) {
+            // todo:
+        }
+
+//        print_snake();
         if (is_horizontal_line(*tailRef, *pre_tail)) {
             // todo: border and refactor
-            if (std::abs(tailRef->x - pre_tail->x) == 1) {
+            if (std::abs(tailRef->x - pre_tail->x) == 1 ||
+                (tailRef->x == WIN_COLS - 2 && pre_tail->x == 1) ||
+                (tailRef->x == 1 && pre_tail->x == WIN_COLS - 2)) {
                 data.pop_back();
             } else {
                 tailRef->x += pre_tail->x > tailRef->x ? 1 : -1;
@@ -130,9 +134,16 @@ private:
 
     void print_snake() {
         fprintf(stderr, "Snake:\n");
-        for (auto & it : data) {
+        for (auto &it : data) {
             fprintf(stderr, "(%d, %d)\n", it.x, it.y);
         }
+    }
+
+    bool is_hit_wall() {
+        return head().x == 0
+               || head().y == 0
+               || head().x == WIN_COLS - 1
+               || head().y == WIN_LINES - 1;
     }
 
     std::list<Point> data;
@@ -145,8 +156,6 @@ void before_destory();
 int draw_menu();
 
 void draw_fruit();
-
-int is_hit_wall();
 
 int is_hit_body(int flag);
 
