@@ -8,13 +8,9 @@ struct Point {
     int y;
 };
 
-bool is_horizontal_line(const Point &a, const Point &b) {
-    return a.y == b.y;
-}
+bool is_horizontal_line(const Point &a, const Point &b);
 
-bool is_vertical_line(const Point &a, const Point &b) {
-    return a.x == b.x;
-}
+bool is_vertical_line(const Point &a, const Point &b);
 
 class Rect {
 public:
