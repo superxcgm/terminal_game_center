@@ -1,6 +1,8 @@
 #ifndef SNAKE_GRAPH_H
 #define SNAKE_GRAPH_H
 
+#include <ncurses.h>
+
 struct Point {
     int x;
     int y;
@@ -18,8 +20,8 @@ class Rect {
 public:
     Rect(int x, int y, int width, int height) : x(x), y(y), width(width), height(height) {}
 
-    void draw() {
-        int ch = m_is_real ? '#' : '.';
+    void draw(bool is_real) {
+        int ch = is_real ? '#' : '.';
         move(0, 0);
         hline(ch, width);
         move(height - 1, 0);
@@ -30,25 +32,11 @@ public:
         vline(ch, height);
     }
 
-    void change_to_real() {
-        m_is_real = true;
-    }
-
-    void change_to_fake() {
-        m_is_real = false;
-    }
-
-    bool is_real() {
-        return m_is_real;
-    }
-
 private:
     int x;
     int y;
     int width;
     int height;
-
-    bool m_is_real = true;
 };
 
 #endif

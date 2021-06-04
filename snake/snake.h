@@ -4,6 +4,7 @@
 #include <list>
 #include "graph.h"
 #include <cstdarg>
+#include <ncurses.h>
 
 
 #define WIN_LINES            24
@@ -148,28 +149,5 @@ private:
 
     std::list<Point> data;
 };
-
-void init();
-
-void before_destory();
-
-int draw_menu();
-
-void draw_fruit();
-
-int is_hit_body(int flag);
-
-void game_over();
-
-void draw_border(char ch);
-
-void draw_control_menu(int flag, int base);
-
-void on_game();
-
-void redraw_snack(int signum);
-
-void load_all_res();
-
 
 #endif
