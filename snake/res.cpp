@@ -1,6 +1,8 @@
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
+#include <ncurses.h>
+
 #include "res.h"
 
 Resource::Resource(const std::string &path) {
@@ -16,4 +18,9 @@ Resource::Resource(const std::string &path) {
         data.push_back(buf);
     }
     fclose(fp);
+}
+
+void Resource::draw(int init_x, int init_y) {
+    for (int i = 0; i < data.size(); ++i)
+        mvaddstr(i + init_y, init_x, data[i].c_str());
 }

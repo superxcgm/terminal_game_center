@@ -1,8 +1,8 @@
 #ifndef SNAKE_RES_H
 #define SNAKE_RES_H
+
 #include <vector>
 #include <string>
-#include <ncurses.h>
 
 class Resource {
 public:
@@ -14,10 +14,7 @@ public:
         return data[i];
     }
 
-    void draw(int init_x, int init_y) {
-        for (int i = 0; i < data.size(); ++i)
-            mvaddstr(i + init_y, init_x, data[i].c_str());
-    }
+    void draw(int init_x, int init_y);
 private:
     std::vector<std::string> data;
 };
