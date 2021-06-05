@@ -39,13 +39,8 @@ void Game::destroy() {
 
 static Game *game_;
 
-void redraw_snack(int signum) {
-//    Log::debug("redraw snake\n");
-    struct timeval tv1;
-    struct timeval tv2;
 
-    gettimeofday(&tv1, nullptr);
-//    Log::debug("queue size: %d\n", game_->queue_dir.size());
+void redraw_snack(int signum) {
     if (!game_->queue_dir.empty()) {
         Log::debug("Extract direction from queue.\n");
         int new_direction = game_->queue_dir.front();
@@ -53,13 +48,34 @@ void redraw_snack(int signum) {
         game_->queue_dir.pop();
         game_->the_snake.change_direction(new_direction);
     }
-    game_->the_snake.update();
+    game_->the_snake.update(game_->rect);
 
     if (game_->is_hit_wall()) {
-        if (game_->config.is_real_border()) {
+//        Log::debug("is real border: %d\n", game_->config.is_real_border());
+        Log::debug("Hit the wall.\n");
+        if (game_->config.is_real_wall()) {
+            Log::debug("Real wall, game over.\n");
             game_->game_over();
         } else {
-            // todo:
+            game_->add_border_back();
+            auto head = game_->the_snake.head();
+//            Log::debug("head(%d, %d), rect.right: %d, rect.bottom: %d\n", head.x, head.y, game_->rect.right(), game_->rect.bottom());
+            Point new_point_on_other_side{0, 0};
+
+            if (head.x >= game_->rect.right()) {
+                new_point_on_other_side = {1, head.y};
+            }
+            if (head.x <= 0) {
+                new_point_on_other_side = {game_->rect.right() - 1, head.y};
+            }
+            if (head.y >= game_->rect.bottom()) {
+                new_point_on_other_side = {head.x, 1};
+            }
+            if (head.y <= 0) {
+                new_point_on_other_side = {head.x, game_->rect.bottom() - 1};
+            }
+            game_->the_snake.add_head(new_point_on_other_side);
+            game_->the_snake.add_head(new_point_on_other_side);
         }
     }
 
@@ -70,84 +86,14 @@ void redraw_snack(int signum) {
     }
 
     if (game_->is_hit_body()) {
+        Log::debug("Hit the body, game over!\n");
         game_->game_over();
     }
-
-//    prev_pos = the_snake.head();
-    /* hit wall  or hit body */
-//    if (is_hit_wall()) {
-//        if (setting.border == BORDER_ON)
-//            goto gmover;
-//        else {
-//            Point pos;
-//
-//            mvaddch(the_snake.head().y, the_snake.head().x,
-//                    SYMBOL_BORDER_OFF);
-//
-//            if (the_snake.head().x == WIN_COLS - 1)
-//                the_snake.update_head_x(1);
-//            if (the_snake.head().x == 0)
-//                the_snake.update_head_x(WIN_COLS - 2);
-//
-//            if (the_snake.head().y == WIN_LINES - 1)
-//                the_snake.update_head_y(1);
-//            if (the_snake.head().y == 0)
-//                the_snake.update_head_y(WIN_LINES - 2);
-//
-//            pos = the_snake.head();        /* other side of border */
-//            // fprintf(stderr, "Points in other side: (%d, %d)\n", pos.x, pos.y);
-//            the_snake.update_head(prev_pos);    /* this side of border */
-//            // fprintf(stderr, "Points in this side: (%d, %d)\n", prev_pos.x, prev_pos.y);
-//            /* generate two points to across a border */
-//            the_snake.add_to_head(pos);
-//            the_snake.add_to_head(pos);
-//        }
-//    }
-//    if (is_hit_body(1)) goto gmover;
-
-    /* eat fruit */
-//    if (the_snake.head().x == fruit.x && the_snake.head().y == fruit.y) {
-//        draw_fruit();
-//        /* when eat a fruit, the length of Snake add one, so tail do not move
-//         forward */
-//        return;
-//    }
-    /* last node step forward */
-//    mvaddch(the_snake.tail().y, the_snake.tail().x, SYMBOL_BLANK);
-//    auto prev = std::prev(the_snake.tailRef());
-
-//    if (prev->y == the_snake.tail().y) {
-//        /* dis == 1 or on the both side of the border */
-//        if (abs(the_snake.tail().x - prev->x) == 1 ||
-//            (the_snake.tail().x == WIN_COLS - 2 && prev->x == 1) ||
-//            (the_snake.tail().x == 1 && prev->x == WIN_COLS - 2)) {
-//            // fprintf(stderr, "free point: (%d, %d)\n", the_snake.tail->pos.x, the_snake.tail->pos.y);
-//            // fprintf(stderr, "previous node: (%d, %d)\n", prev->pos.x, prev->pos.y);
-////            free(the_snake.tail);
-//            the_snake.tail = prev;
-//        } else
-//            the_snake.tail->pos.x += prev->pos.x > the_snake.tail->pos.x ?
-//                                     1 : -1;
-//
-//
-//    } else if (prev->pos.x == the_snake.tail->pos.x) {
-//        if (abs(the_snake.tail->pos.y - prev->pos.y) == 1 ||
-//            (the_snake.tail->pos.y == WIN_LINES - 2 && prev->pos.y == 1) ||
-//            (the_snake.tail->pos.y == 1 && prev->pos.y == WIN_LINES - 2)) {
-//            free(the_snake.tail);
-//            the_snake.tail = prev;
-//        } else
-//            the_snake.tail->pos.y += prev->pos.y > the_snake.tail->pos.y ?
-//                                     1 : -1;
-//    }
+    game_->the_snake.print_snake();
     refresh();
-    gettimeofday(&tv2, nullptr);
-    // fprintf(stderr, "this signal handle take %f ms.\n", tv2.tv_sec * 1000 + tv2.tv_usec / 1000.0 - (tv1.tv_sec * 1000 + tv1.tv_usec / 1000.0));
-    /* less than 1ms on my machine */
-    // print_snake();
-    return;
-    game_->game_over();
 }
+
+void Game::add_border_back() { mvaddch(game_->the_snake.head().y, game_->the_snake.head().x, '.'); }
 
 void Game::on_game() {
     int set_ticker(int n_msecs);
@@ -156,7 +102,7 @@ void Game::on_game() {
     int delay;
     is_game_over = false;
     clear();
-    rect.draw(config.is_real_border());
+    rect.draw(config.is_real_wall());
 
     the_snake = Snake();
     the_snake.draw();
@@ -253,7 +199,7 @@ void Game::draw_fruit() {
 }
 
 bool Game::is_hit_body() {
-    return the_snake.is_hit(the_snake.head(), true);
+    return the_snake.is_hit(the_snake.head(), true, rect, config.is_real_wall());
 }
 
 bool Game::is_hit_wall() {
@@ -269,5 +215,5 @@ bool Game::is_hit_fruit() {
 }
 
 bool Game::is_hit_snake(const Point &point) {
-    return the_snake.is_hit(point, false);
+    return the_snake.is_hit(point, false, rect, config.is_real_wall());
 }

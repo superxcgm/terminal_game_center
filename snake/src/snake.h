@@ -26,24 +26,18 @@ public:
 
     void draw();
 
-    void update();
+    void update(const Rect& rect);
+
+    void add_head(const Point& p);
 
     void change_direction(int new_direction);
 
     void duplicate_tail();
 
-    bool is_hit(const Point& p, bool ignore_head);
+    bool is_hit(const Point& p, bool ignore_head, const Rect &rect, bool is_real_wall);
 
     Point head() {
         return data.front();
-    }
-
-    std::reverse_iterator<std::list<Point, std::allocator<Point>>::iterator> tailRef() {
-        return data.rbegin();
-    }
-
-    std::reverse_iterator<std::list<Point, std::allocator<Point>>::iterator> headRef() {
-        return data.rend();
     }
 
     int direction;
@@ -53,6 +47,8 @@ private:
     void print_snake();
 
     std::list<Point> data;
+
+    friend void redraw_snack(int signum);
 };
 
 #endif
