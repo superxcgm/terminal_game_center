@@ -20,7 +20,6 @@
 #define SYMBOL_SNAKE_HEAD    '@'
 #define SYMBOL_FRUIT        '$'
 #define SYMBOL_BLANK        ' '
-#define ONDEBUG
 
 class Snake {
 public:

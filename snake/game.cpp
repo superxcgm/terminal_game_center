@@ -3,6 +3,7 @@
 #include <ctime>
 
 #include "game.h"
+#include "log.h"
 
 void Game::init() {
     initscr();
@@ -13,6 +14,7 @@ void Game::init() {
         fprintf(stderr, "Please resize your window and try again\n");
         exit(1);
     }
+    Log::init();
     srand(time(nullptr));
     cbreak(); /* donot buffer input */
     noecho();
@@ -35,22 +37,25 @@ void Game::destroy() {
     endwin();
 }
 
-static Game game_;
+static Game *game_;
 
 void redraw_snack(int signum) {
+//    Log::debug("redraw snake\n");
     // int has_veer = 0;
     struct timeval tv1;
     struct timeval tv2;
 //    Point prev_pos{0, 0};
 
     gettimeofday(&tv1, nullptr);
-    /* need veer */
-    if (!game_.queue_dir.empty()) {
-        int new_direction = game_.queue_dir.front();
-        game_.queue_dir.pop();
-        game_.the_snake.change_direction(new_direction);
+//    Log::debug("queue size: %d\n", game_->queue_dir.size());
+    if (!game_->queue_dir.empty()) {
+        Log::debug("Extract direction from queue.\n");
+        int new_direction = game_->queue_dir.front();
+        Log::debug("Receive new direction: %d", new_direction);
+        game_->queue_dir.pop();
+        game_->the_snake.change_direction(new_direction);
     }
-    game_.the_snake.update();
+    game_->the_snake.update();
 //    prev_pos = the_snake.head();
     /* hit wall  or hit body */
 //    if (is_hit_wall()) {
@@ -126,12 +131,12 @@ void redraw_snack(int signum) {
     return;
     gmover:
     attron(A_BOLD);
-    mvaddch(game_.the_snake.head().y, game_.the_snake.head().x, 'x');
+    mvaddch(game_->the_snake.head().y, game_->the_snake.head().x, 'x');
     attroff(A_BOLD);
-    game_.game_over();
+    game_->game_over();
 }
 
-void Game::on_game(const Config& config) {
+void Game::on_game(const Config &config) {
     int set_ticker(int n_msecs);
     int ch;
     int pre_ch;
@@ -144,12 +149,14 @@ void Game::on_game(const Config& config) {
 
     draw_fruit();
 
+    game_ = this;
     signal(SIGALRM, redraw_snack);
     delay = 20 * (10 - config.get_level());
     set_ticker(delay);    /* speed of Snake would not change during play */
     pre_ch = ' ';
     while (true) {
         ch = getch();
+        Log::debug("User press %c\n", ch);
         if (ch == pre_ch)    /* ignore duplication key press */
             continue;
         pre_ch = ch;
@@ -188,19 +195,18 @@ void Game::on_game(const Config& config) {
             case KEY_RIGHT:
                 queue_dir.push(DIR_RIGHT);
                 break;
-#ifdef ONDEBUG
             case 'q':
             case 'Q':
                 destroy();
                 exit(0);
-#endif
             default:
                 break;
         }
     }
 }
 
-Game::Game(): rect(0, 0, WIN_COLS, WIN_LINES), res_game_over("res/game_over.res") {
+Game::Game() : rect(0, 0, WIN_COLS, WIN_LINES),
+               res_game_over("res/game_over.res") {
 }
 
 void Game::game_over() {

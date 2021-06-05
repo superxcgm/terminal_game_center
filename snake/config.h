@@ -3,13 +3,13 @@
 
 class Config {
 public:
-    int decreaseLevel() {
+    void decreaseLevel() {
         if (level > 1) {
             level--;
         }
     }
 
-    int increaseLevel() {
+    void increaseLevel() {
         if (level < 9) {
             level++;
         }
@@ -19,7 +19,7 @@ public:
         return real_border;
     }
 
-    bool set_real_border(bool real_border) {
+    void set_real_border(bool real_border) {
         this->real_border = real_border;
     }
 

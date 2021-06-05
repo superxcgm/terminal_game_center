@@ -3,8 +3,8 @@ CFLAGS = -std=c++17 -Wall -pedantic
 
 all: snake
 
-snake: set_ticker.o snake.o res.o game.o main.cpp graph.o menu.o
-	$(CC) -o snake -g set_ticker.o snake.o res.o game.o graph.o menu.o main.cpp $(CFLAGS) -lcurses
+snake: set_ticker.o snake.o res.o game.o main.cpp graph.o menu.o log.o
+	$(CC) -o snake -g set_ticker.o snake.o res.o game.o graph.o menu.o log.o main.cpp $(CFLAGS) -lcurses
 
 snake.o: snake.cpp snake.h
 	$(CC) -c -g snake.cpp $(CFLAGS)
@@ -24,11 +24,9 @@ graph.o: graph.h graph.cpp
 menu.o: menu.cpp menu.h
 	$(CC) -c -g menu.cpp $(CFLAGS)
 
+log.o: log.cpp log.h
+	$(CC) -c -g log.cpp $(CFLAGS)
+
 .PHONY: clean
 clean:
 	-rm snake *.o
-
-.PHONY: debug
-
-debug:
-	./snake 2> log.txt
