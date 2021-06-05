@@ -58,7 +58,19 @@ void redraw_snack(int signum) {
     if (game_->is_hit_wall()) {
         if (game_->config.is_real_border()) {
             game_->game_over();
+        } else {
+            // todo:
         }
+    }
+
+    if (game_->is_hit_fruit()) {
+        // todo: duplicate tail add two node to snake which is not really good
+        game_->the_snake.duplicate_tail();
+        game_->draw_fruit();
+    }
+
+    if (game_->is_hit_body()) {
+        game_->game_over();
     }
 
 //    prev_pos = the_snake.head();
@@ -162,7 +174,7 @@ void Game::on_game() {
         if (ch == pre_ch)    /* ignore duplication key press */
             continue;
         pre_ch = ch;
-        if (is_game_over){
+        if (is_game_over) {
             switch (ch) {
                 case 'm':
                 case 'M':
@@ -210,7 +222,7 @@ void Game::on_game() {
 
 Game::Game() : rect(0, 0, WIN_COLS, WIN_LINES),
                menu(rect),
-               res_game_over("res/game_over.res"){
+               res_game_over("res/game_over.res") {
 }
 
 void Game::game_over() {
@@ -235,59 +247,13 @@ void Game::draw_fruit() {
     do {
         fruit.x = rect.left() + rand() % (rect.get_width() - 1) + 1;
         fruit.y = rect.top() + rand() % (rect.get_height() - 1) + 1;
-    } while (is_hit_body(0));
+    } while (is_hit_snake(fruit));
     mvaddch(fruit.y, fruit.x, SYMBOL_FRUIT);
     refresh();
 }
 
-/* flag:
-		0=>fruit check
-		1=>head node check
-*/
-int Game::is_hit_body(int flag) {
-    //    struct node_front *p;
-    Point *des;
-
-    auto p = the_snake.tailRef();
-    auto prev = std::prev(p);
-    auto head = the_snake.head();
-    auto headRef = the_snake.headRef();
-    des = flag ? &head : &fruit;
-    // if(flag == 1){
-    // 	fprintf(stderr, "is_hit_body(1):\n");
-    // 	fprintf(stderr, "check point: (%d, %d)\n", des->x, des->y);
-    // }
-    while (prev != headRef) {
-        if (flag && prev->x == head.x &&
-            prev->y == head.y)
-            break;
-        if (true) { // todo: setting.border == BORDER_OFF
-            if ((p->x == WIN_COLS - 2 && prev->x == 1) ||
-                (p->x == 1 && prev->x == WIN_COLS - 2) ||
-                (p->y == WIN_LINES - 2 && prev->y == 1) ||
-                (p->y == 1 && prev->y == WIN_LINES - 2)) {
-                p = prev;
-                prev = std::prev(p);
-                continue;
-            }
-        }
-        // if(flag == 1){
-        // 	fprintf(stderr, "check point is on segment (%d, %d) - (%d, %d)\n", p->pos.x, p->pos.y, prev->pos.x, prev->pos.y);
-        // }
-        if (p->x == prev->x && p->x == des->x) {
-            if ((des->y >= p->y && des->y <= prev->y) ||
-                (des->y >= prev->y && des->y <= p->y))
-                return 1;
-        } else if (p->y == prev->y && p->y == des->y) {
-            if ((des->x >= p->x && des->x <= prev->x) ||
-                (des->x >= prev->x && des->x <= p->x))
-                return 1;
-        }
-        p = prev;
-        prev = std::prev(p);
-        /* head node check do not check first segment */
-    }
-    return 0;
+bool Game::is_hit_body() {
+    return the_snake.is_hit(the_snake.head(), true);
 }
 
 bool Game::is_hit_wall() {
@@ -296,4 +262,12 @@ bool Game::is_hit_wall() {
            || head.y == rect.top()
            || head.x == rect.right()
            || head.y == rect.bottom();
+}
+
+bool Game::is_hit_fruit() {
+    return the_snake.head().x == fruit.x && the_snake.head().y == fruit.y;
+}
+
+bool Game::is_hit_snake(const Point &point) {
+    return the_snake.is_hit(point, false);
 }

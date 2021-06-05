@@ -43,9 +43,13 @@ private:
 
     void draw_fruit();
 
-    int is_hit_body(int flag);
+    bool is_hit_body();
 
     friend void redraw_snack(int signum);
+
+    bool is_hit_fruit();
+
+    bool is_hit_snake(const Point &point);
 };
 
 

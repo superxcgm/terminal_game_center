@@ -1,6 +1,8 @@
 #include <ncurses.h>
+#include <string>
 
 #include "snake.h"
+#include "log.h"
 
 Snake::Snake() {
     data.push_back({INIT_X, INIT_Y});
@@ -83,8 +85,43 @@ bool Snake::valid_change_direction(int new_direction) {
 }
 
 void Snake::print_snake() {
-    fprintf(stderr, "Snake:\n");
+    std::string str_points;
     for (auto &it : data) {
-        fprintf(stderr, "(%d, %d)\n", it.x, it.y);
+        str_points += ", (" + std::to_string(it.x) + ", " + std::to_string(it.y) + ")";
     }
+    std::string msg = "Snake: " + str_points + "\n";
+    Log::debug(msg.c_str());
+}
+
+void Snake::duplicate_tail() {
+    data.push_back(*data.rbegin());
+}
+
+bool Snake::is_hit(const Point& p, bool ignore_head) {
+
+    auto start = data.begin();
+    if (ignore_head) {
+        start++;
+    }
+
+    for (auto it = start; ;it++) {
+        auto next = std::next(it);
+        if (next == data.end()) {
+            break;
+        }
+        if (is_horizontal_line(*it, *next) && it->y == p.y) {
+            int min_x = std::min(it->x, next->x);
+            int max_x = std::max(it->x, next->x);
+            if (min_x <= p.x && p.x <= max_x) {
+                return true;
+            }
+        } else if (is_vertical_line(*it, *next) && it->x == p.x) {
+            int min_y = std::min(it->y, next->y);
+            int max_y = std::max(it->y, next->y);
+            if (min_y <= p.y && p.y <= max_y) {
+                return true;
+            }
+        }
+    }
+    return false;
 }

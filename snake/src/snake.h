@@ -30,6 +30,10 @@ public:
 
     void change_direction(int new_direction);
 
+    void duplicate_tail();
+
+    bool is_hit(const Point& p, bool ignore_head);
+
     Point head() {
         return data.front();
     }
