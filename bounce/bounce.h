@@ -1,5 +1,8 @@
-#ifndef BOUNCE_H
-#define BOUNCE_H
+#ifndef BOUNCE_BOUNCE_H_
+#define BOUNCE_BOUNCE_H_
+
+#include <utility>
+
 /* some settings for the game */
 
 #define BLANK ' '
@@ -76,4 +79,4 @@ struct paddle {
   }
 };
 
-#endif
+#endif  // BOUNCE_BOUNCE_H_

@@ -18,7 +18,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "bounce.h"
+#include "./bounce.h"
 
 struct ppball the_ball;
 struct paddle pad;
@@ -161,8 +161,10 @@ int bounce_or_lost(struct ppball *bp) {
       }
       bp->y_dir = -1;
       return_val = 1;
-    } else /* game over */
+    } else {
+      /* game over */
       return -1;
+    }
   }
 
   if (bp->x_pos == LEFT_EDGE) {
@@ -177,6 +179,6 @@ int bounce_or_lost(struct ppball *bp) {
 
 void draw_info() {
   static char str[50];
-  sprintf(str, "Score: %-4d", score);
+  snprintf(str, sizeof(str), "Score: %-4d", score);
   mvaddstr(INFO_Y, INFO_X, str);
 }

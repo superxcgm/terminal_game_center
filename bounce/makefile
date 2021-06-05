@@ -3,9 +3,9 @@ CC = g++
 
 all: bin/bounce
 
-bin/bounce: bounce.h bounce2d.cpp set_ticker.c
+bin/bounce: bounce.h bounce2d.cpp set_ticker.cpp
 	mkdir -p bin
-	$(CC) -g -o bin/bounce2d bounce2d.cpp set_ticker.c $(CFLAGS) -lcurses
+	$(CC) -g -o bin/bounce2d bounce2d.cpp set_ticker.cpp $(CFLAGS) -lcurses
 
 .PHONY: clean
 clean:
