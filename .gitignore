@@ -5,3 +5,4 @@ a.out
 bin
 debug/
 log.txt
+*.dSYM

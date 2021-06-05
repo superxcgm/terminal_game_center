@@ -1,25 +1,28 @@
-CC = g++
-CFLAGS = -std=c++17 -Wall -pedantic
+CXX = g++
+CFLAGS = -std=c++17 -Wall -pedantic -g
 
-all: snake
+BIN_NAME = snake
 
-snake: set_ticker.o snake.o res.o
-	$(CC) -o snake -g set_ticker.o snake.o res.o $(CFLAGS) -lcurses
+SRC_DIR = src
 
-snake.o: snake.cpp snake.h
-	$(CC) -c -g snake.cpp $(CFLAGS)
+DEST_DIR = bin
 
-set_ticker.o: set_ticker.c
-	$(CC) -c -g set_ticker.c $(CFLAGS)
+OBJS := $(patsubst $(SRC_DIR)/%.cpp, $(DEST_DIR)/%.o, $(wildcard $(SRC_DIR)/*.cpp))
 
-res.o: res.cpp res.h
-	$(CC) -c -g res.cpp $(CFLAGS)
+TARGET := $(DEST_DIR)/$(BIN_NAME)
+
+$(DEST_DIR)/%.o: $(SRC_DIR)/%.cpp
+	$(CXX) -c $< -o $@ $(CFLAGS)
+
+all: $(BIN_NAME)
+
+$(BIN_NAME): dirs $(OBJS)
+	$(CXX) -o $(TARGET) $(OBJS) $(CFLAGS) -lcurses
+
+.PHONY: dirs
+dirs:
+	mkdir -p $(DEST_DIR)
 
 .PHONY: clean
 clean:
-	-rm snake *.o
-
-.PHONY: debug
-
-debug:
-	./snake 2> log.txt
+	-rm $(TARGET) $(OBJS)
