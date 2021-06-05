@@ -1,25 +1,38 @@
-# terminal_game_center
-Some typical game implement in a terminal with C.
-## snake
+# Terminal Game Center
+Some typical game implement in a terminal with C++. I'm developing this in macOS Big Sur, you maybe need to do some change if you use other system.
+
+## Snake
+
 ### Preview
-![snake](img/snake.jpg)
-## bounce
+![snake](snake/img/snake.gif)
+
+## Bounce
 base on Understanding Unix/Linux Programming.
 
 ### Preview
-![bounce](img/bounce.jpg)
-## tetris
+![bounce](bounce/img/bounce.gif)
+
+## Tetris
+
 ### Process
 under developing
-## Relative Library
+
+## Dependencies
+
 ### curses
+
 #### Install
+
+##### OS X
+```
+brew install ncurses
+```
+
 ##### Centos
 `yum install ncurses-devel`
+
 ##### Ubuntu
 ```
 sudo apt-get update
 sudo apt-get install libncurses5-dev
 ```
-##### OS X
-`...`
