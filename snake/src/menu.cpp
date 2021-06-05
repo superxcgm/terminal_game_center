@@ -36,13 +36,13 @@ void Menu::draw_control_menu(int flag, int base, const Config& config) {
                 mvaddstr(base + i, left_offset, res_control_menu.get_line(i).c_str());
             break;
         case 1:
-            if (config.is_real_border()) attron(A_BOLD);
+            if (config.is_real_wall()) attron(A_BOLD);
             mvaddstr(base + 5, left_offset + width / 2, "Borders On");
-            if (config.is_real_border()) attroff(A_BOLD);
+            if (config.is_real_wall()) attroff(A_BOLD);
 
-            if (!config.is_real_border()) attron(A_BOLD);
+            if (!config.is_real_wall()) attron(A_BOLD);
             mvaddstr(base + 6, left_offset + width / 2, "Borders Off");
-            if (!config.is_real_border()) attroff(A_BOLD);
+            if (!config.is_real_wall()) attroff(A_BOLD);
 
             for (i = 1; i <= 9; ++i) {
                 if (i == config.get_level()) attron(A_BOLD);
@@ -92,6 +92,8 @@ Config Menu::draw_main() {
                 break;
             case 'q': /* quit */
             case 'Q':
+                curs_set(1); /* display cursor */
+                endwin();
                 exit(0);
             case ' ':
             case '\n':

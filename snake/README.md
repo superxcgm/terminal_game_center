@@ -1,7 +1,7 @@
 # Snake
 A typical game, UI and experience reference `nsnake`.
 ## Preview
-![Snake](../img/Snake.jpg)
+![Snake](./img/snake.gif)
 ## Feature
 * Use linklist to store veer point.
 * Use interval timer to redraw Snake repeatedly.

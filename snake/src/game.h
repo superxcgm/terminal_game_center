@@ -39,17 +39,19 @@ private:
 
     void on_game();
 
+    void add_border_back();
+
     void game_over();
 
     void draw_fruit();
 
     bool is_hit_body();
 
-    friend void redraw_snack(int signum);
-
     bool is_hit_fruit();
 
     bool is_hit_snake(const Point &point);
+
+    friend void redraw_snack(int signum);
 };
 
 

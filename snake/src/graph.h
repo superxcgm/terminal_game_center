@@ -28,27 +28,27 @@ public:
         vline(ch, height);
     }
 
-    int left() {
+    int left() const {
         return x;
     }
 
-    int top() {
+    int top() const {
         return y;
     }
 
-    int right() {
+    int right() const {
         return x + width - 1;
     }
 
-    int bottom() {
+    int bottom() const {
         return y + height - 1;
     }
 
-    int get_width() {
+    int get_width() const {
         return width;
     }
 
-    int get_height() {
+    int get_height() const {
         return height;
     }
 

@@ -15,7 +15,7 @@ public:
         }
     }
 
-    bool is_real_border() const {
+    bool is_real_wall() const {
         return real_border;
     }
 
