@@ -5,6 +5,7 @@
 #include "res.h"
 #include "config.h"
 #include "snake.h"
+#include "menu.h"
 
 class Game {
 public:
@@ -17,12 +18,6 @@ public:
     void destroy();
 
 private:
-    bool draw_menu();
-
-    // todo: use smart pointer to fix memory leak
-    Resource *res_snake;
-    Resource *res_control_menu;
-    Resource *res_game_over;
 
     Snake the_snake;
 
@@ -34,7 +29,9 @@ private:
 
     Point fruit;
 
-    void load_all_res();
+    Menu menu;
+
+    Resource res_game_over;
 
     void on_game(const Config& config);
 
@@ -43,8 +40,6 @@ private:
     void draw_fruit();
 
     int is_hit_body(int flag);
-
-    void draw_control_menu(int flag, int base, const Config& config);
 
     friend void redraw_snack(int signum);
 };

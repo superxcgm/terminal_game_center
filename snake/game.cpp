@@ -13,7 +13,6 @@ void Game::init() {
         fprintf(stderr, "Please resize your window and try again\n");
         exit(1);
     }
-    load_all_res();
     srand(time(nullptr));
     cbreak(); /* donot buffer input */
     noecho();
@@ -25,112 +24,15 @@ void Game::init() {
 }
 
 void Game::run() {
-    while (draw_menu());
+    while (true) {
+        Config config = menu.draw_main();
+        on_game(config);
+    }
 }
 
 void Game::destroy() {
     curs_set(1); /* display cursor */
     endwin();
-}
-
-void draw_border(char ch) {
-    move(0, 0);
-    hline(ch, WIN_COLS);    /* top */
-    move(WIN_LINES - 1, 0);
-    hline(ch, WIN_COLS);    /* bottom */
-    move(0, 0);
-    vline(ch, WIN_LINES);    /* left */
-    move(0, WIN_COLS - 1);
-    vline(ch, WIN_LINES);    /* right */
-}
-
-bool Game::draw_menu() {
-    int i;
-    int ch;
-    int control_menu_base;
-
-    clear();
-
-    res_snake->draw(3, 3);
-
-
-
-    addstr("   V" VERSION); /* strcat */
-    draw_border('*');
-    control_menu_base = 3 + res_snake->line_count() + 3;
-    Config config;
-    draw_control_menu(0, control_menu_base, config); /* 0=>base, 1=>control part */
-    draw_control_menu(1, control_menu_base, config);
-    refresh();
-    while (true) {
-        ch = getch();
-        switch (ch) {
-            case KEY_LEFT:
-                config.decreaseLevel();
-                draw_control_menu(1, control_menu_base, config);
-                break;
-            case KEY_RIGHT:
-                config.increaseLevel();
-                draw_control_menu(1, control_menu_base, config);
-                break;
-            case KEY_UP:
-                config.set_real_border(true);
-                draw_control_menu(1, control_menu_base, config);
-                break;
-            case KEY_DOWN:
-                config.set_real_border(false);
-                draw_control_menu(1, control_menu_base, config);
-                break;
-            case 'q': /* quit */
-            case 'Q':
-                return false;
-            case ' ':
-            case '\n':
-                on_game(config);
-                return false;    /* reenter menu */
-            default:
-                break;
-        }
-    }
-}
-
-void Game::load_all_res() {
-    res_snake = new Resource("res/Snake.res");
-    res_control_menu = new Resource("res/control_menu.res");
-    res_game_over = new Resource("res/game_over.res");
-}
-
-void Game::draw_control_menu(int flag, int base, const Config& config) {
-    const int left_offset = 7;
-    const int width = 53;
-    int i;
-    /* 0=>base, 1=>control part */
-    switch (flag) {
-        case 0:
-
-            for (i = 0; i < res_control_menu->line_count(); ++i)
-                mvaddstr(base + i, left_offset, res_control_menu->get_line(i).c_str());
-            break;
-        case 1:
-            if (config.is_real_border()) attron(A_BOLD);
-            mvaddstr(base + 5, left_offset + width / 2, "Borders On");
-            if (config.is_real_border()) attroff(A_BOLD);
-
-            if (!config.is_real_border()) attron(A_BOLD);
-            mvaddstr(base + 6, left_offset + width / 2, "Borders Off");
-            if (!config.is_real_border()) attroff(A_BOLD);
-
-            for (i = 1; i <= 9; ++i) {
-                if (i == config.get_level()) attron(A_BOLD);
-                mvaddch(base + 8, left_offset + width / 2 + (i - 1) * 2,
-                        i + '0');
-                if (i == config.get_level()) attroff(A_BOLD);
-            }
-            break;
-        default:
-            break;
-    }
-    refresh();
 }
 
 static Game game_;
@@ -298,7 +200,7 @@ void Game::on_game(const Config& config) {
     }
 }
 
-Game::Game(): rect(0, 0, WIN_COLS, WIN_LINES) {
+Game::Game(): rect(0, 0, WIN_COLS, WIN_LINES), res_game_over("res/game_over.res") {
 }
 
 void Game::game_over() {
@@ -309,9 +211,9 @@ void Game::game_over() {
     signal(SIGALRM, SIG_IGN);
     set_ticker(0); /* do not redraw Snake any more */
 
-    left_offset = (WIN_COLS - strlen(res_game_over->get_line(0).c_str())) / 2;
-    for (i = 0; i < res_game_over->line_count(); ++i)
-        mvaddstr(3 + i, left_offset, res_game_over->get_line(i).c_str());
+    left_offset = (WIN_COLS - strlen(res_game_over.get_line(0).c_str())) / 2;
+    for (i = 0; i < res_game_over.line_count(); ++i)
+        mvaddstr(3 + i, left_offset, res_game_over.get_line(i).c_str());
     gover = 1;
     refresh();
 }
