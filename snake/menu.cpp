@@ -3,23 +3,25 @@
 #include "menu.h"
 
 #define VERSION "0.5"
-#define WIN_LINES 24
-#define WIN_COLS 80
 
-Menu::Menu() : res_snake("res/Snake.res"),
-               res_control_menu("res/control_menu.res"){
+Menu::Menu(const Rect & r) : res_snake("res/Snake.res"),
+               res_control_menu("res/control_menu.res"), rect(r){
 
 }
 
-void draw_border(char ch) {
+void Menu::draw_border(char ch) {
+    // todo: use windows to refactor
     move(0, 0);
-    hline(ch, WIN_COLS);    /* top */
-    move(WIN_LINES - 1, 0);
-    hline(ch, WIN_COLS);    /* bottom */
+    hline(ch, rect.get_width());    /* top */
+
+    move(rect.bottom(), 0);
+    hline(ch, rect.get_width());    /* bottom */
+
     move(0, 0);
-    vline(ch, WIN_LINES);    /* left */
-    move(0, WIN_COLS - 1);
-    vline(ch, WIN_LINES);    /* right */
+    vline(ch, rect.get_height());    /* left */
+
+    move(0, rect.right());
+    vline(ch, rect.get_height());    /* right */
 }
 
 void Menu::draw_control_menu(int flag, int base, const Config& config) {

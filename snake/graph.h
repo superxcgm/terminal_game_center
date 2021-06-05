@@ -20,12 +20,36 @@ public:
         int ch = is_real ? '#' : '.';
         move(0, 0);
         hline(ch, width);
-        move(height - 1, 0);
+        move(height, 0);
         hline(ch, width);
         move(0, 0);
         vline(ch, height);
-        move(0, width - 1);
+        move(0, width);
         vline(ch, height);
+    }
+
+    int left() {
+        return x;
+    }
+
+    int top() {
+        return y;
+    }
+
+    int right() {
+        return x + width - 1;
+    }
+
+    int bottom() {
+        return y + height - 1;
+    }
+
+    int get_width() {
+        return width;
+    }
+
+    int get_height() {
+        return height;
     }
 
 private:

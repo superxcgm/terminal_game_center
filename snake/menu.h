@@ -3,18 +3,23 @@
 
 #include "res.h"
 #include "config.h"
+#include "graph.h"
 
 class Menu {
 public:
-    Menu();
+    Menu(const Rect &rect);
 
     Config draw_main();
 
 private:
+    void draw_border(char ch);
+
     void draw_control_menu(int flag, int base, const Config& config);
 
     Resource res_snake;
     Resource res_control_menu;
+
+    Rect rect;
 };
 
 

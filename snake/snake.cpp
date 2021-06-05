@@ -48,16 +48,10 @@ void Snake::update() {
     auto pre_tail = std::next(tailRef);
     mvaddch(tailRef->y, tailRef->x, SYMBOL_BLANK);
 
-    if (is_hit_wall()) {
-        // todo:
-    }
-
 //        print_snake();
     if (is_horizontal_line(*tailRef, *pre_tail)) {
         // todo: border and refactor
-        if (std::abs(tailRef->x - pre_tail->x) == 1 ||
-            (tailRef->x == WIN_COLS - 2 && pre_tail->x == 1) ||
-            (tailRef->x == 1 && pre_tail->x == WIN_COLS - 2)) {
+        if (std::abs(tailRef->x - pre_tail->x) == 1) {
             data.pop_back();
         } else {
             tailRef->x += pre_tail->x > tailRef->x ? 1 : -1;
@@ -93,11 +87,4 @@ void Snake::print_snake() {
     for (auto &it : data) {
         fprintf(stderr, "(%d, %d)\n", it.x, it.y);
     }
-}
-
-bool Snake::is_hit_wall() {
-    return head().x == 0
-           || head().y == 0
-           || head().x == WIN_COLS - 1
-           || head().y == WIN_LINES - 1;
 }

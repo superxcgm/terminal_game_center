@@ -31,9 +31,13 @@ private:
 
     Menu menu;
 
+    Config config;
+
     Resource res_game_over;
 
-    void on_game(const Config& config);
+    bool is_hit_wall();
+
+    void on_game();
 
     void game_over();
 

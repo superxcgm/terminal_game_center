@@ -27,8 +27,8 @@ void Game::init() {
 
 void Game::run() {
     while (true) {
-        Config config = menu.draw_main();
-        on_game(config);
+        config = menu.draw_main();
+        on_game();
     }
 }
 
@@ -41,10 +41,8 @@ static Game *game_;
 
 void redraw_snack(int signum) {
 //    Log::debug("redraw snake\n");
-    // int has_veer = 0;
     struct timeval tv1;
     struct timeval tv2;
-//    Point prev_pos{0, 0};
 
     gettimeofday(&tv1, nullptr);
 //    Log::debug("queue size: %d\n", game_->queue_dir.size());
@@ -56,6 +54,13 @@ void redraw_snack(int signum) {
         game_->the_snake.change_direction(new_direction);
     }
     game_->the_snake.update();
+
+    if (game_->is_hit_wall()) {
+        if (game_->config.is_real_border()) {
+            goto game_over;
+        }
+    }
+
 //    prev_pos = the_snake.head();
     /* hit wall  or hit body */
 //    if (is_hit_wall()) {
@@ -129,14 +134,14 @@ void redraw_snack(int signum) {
     /* less than 1ms on my machine */
     // print_snake();
     return;
-    gmover:
+    game_over:
     attron(A_BOLD);
     mvaddch(game_->the_snake.head().y, game_->the_snake.head().x, 'x');
     attroff(A_BOLD);
     game_->game_over();
 }
 
-void Game::on_game(const Config &config) {
+void Game::on_game() {
     int set_ticker(int n_msecs);
     int ch;
     int pre_ch;
@@ -166,7 +171,7 @@ void Game::on_game(const Config &config) {
                 case 'M':
                     return;    /* back to menu */
                 case '\n':
-                    on_game(config);    /* just recursion */
+                    on_game();    /* just recursion */
                     return;
                 default:
                     break;
@@ -206,7 +211,8 @@ void Game::on_game(const Config &config) {
 }
 
 Game::Game() : rect(0, 0, WIN_COLS, WIN_LINES),
-               res_game_over("res/game_over.res") {
+               menu(rect),
+               res_game_over("res/game_over.res"){
 }
 
 void Game::game_over() {
@@ -217,7 +223,7 @@ void Game::game_over() {
     signal(SIGALRM, SIG_IGN);
     set_ticker(0); /* do not redraw Snake any more */
 
-    left_offset = (WIN_COLS - strlen(res_game_over.get_line(0).c_str())) / 2;
+    left_offset = (rect.get_width() - strlen(res_game_over.get_line(0).c_str())) / 2;
     for (i = 0; i < res_game_over.line_count(); ++i)
         mvaddstr(3 + i, left_offset, res_game_over.get_line(i).c_str());
     gover = 1;
@@ -225,11 +231,9 @@ void Game::game_over() {
 }
 
 void Game::draw_fruit() {
-/* border left:0, border right: WIN_COLS - 1
-        fruit shouldn't in the border */
     do {
-        fruit.x = rand() % (WIN_COLS - 2) + 1;
-        fruit.y = rand() % (WIN_LINES - 2) + 1;
+        fruit.x = rect.left() + rand() % (rect.get_width() - 1) + 1;
+        fruit.y = rect.top() + rand() % (rect.get_height() - 1) + 1;
     } while (is_hit_body(0));
     mvaddch(fruit.y, fruit.x, SYMBOL_FRUIT);
     refresh();
@@ -283,4 +287,12 @@ int Game::is_hit_body(int flag) {
         /* head node check do not check first segment */
     }
     return 0;
+}
+
+bool Game::is_hit_wall() {
+    auto head = the_snake.head();
+    return head.x == rect.left()
+           || head.y == rect.top()
+           || head.x == rect.right()
+           || head.y == rect.bottom();
 }
