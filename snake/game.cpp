@@ -57,7 +57,7 @@ void redraw_snack(int signum) {
 
     if (game_->is_hit_wall()) {
         if (game_->config.is_real_border()) {
-            goto game_over;
+            game_->game_over();
         }
     }
 
@@ -134,10 +134,6 @@ void redraw_snack(int signum) {
     /* less than 1ms on my machine */
     // print_snake();
     return;
-    game_over:
-    attron(A_BOLD);
-    mvaddch(game_->the_snake.head().y, game_->the_snake.head().x, 'x');
-    attroff(A_BOLD);
     game_->game_over();
 }
 
@@ -146,7 +142,7 @@ void Game::on_game() {
     int ch;
     int pre_ch;
     int delay;
-    gover = 1;
+    is_game_over = false;
     clear();
     rect.draw(config.is_real_border());
 
@@ -166,7 +162,7 @@ void Game::on_game() {
         if (ch == pre_ch)    /* ignore duplication key press */
             continue;
         pre_ch = ch;
-        if (gover)
+        if (is_game_over){
             switch (ch) {
                 case 'm':
                 case 'M':
@@ -177,6 +173,7 @@ void Game::on_game() {
                 default:
                     break;
             }
+        }
         switch (ch) {
             case 'w':
             case 'W':
@@ -218,16 +215,19 @@ Game::Game() : rect(0, 0, WIN_COLS, WIN_LINES),
 
 void Game::game_over() {
     int set_ticker(int n_msecs);
-    int i;
     int left_offset;
+
+    attron(A_BOLD);
+    mvaddch(game_->the_snake.head().y, game_->the_snake.head().x, 'x');
+    attroff(A_BOLD);
 
     signal(SIGALRM, SIG_IGN);
     set_ticker(0); /* do not redraw Snake any more */
 
     left_offset = (rect.get_width() - strlen(res_game_over.get_line(0).c_str())) / 2;
-    for (i = 0; i < res_game_over.line_count(); ++i)
+    for (int i = 0; i < res_game_over.line_count(); ++i)
         mvaddstr(3 + i, left_offset, res_game_over.get_line(i).c_str());
-    gover = 1;
+    is_game_over = true;
     refresh();
 }
 

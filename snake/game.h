@@ -21,7 +21,7 @@ private:
 
     Snake the_snake;
 
-    int gover = 1;
+    bool is_game_over;
 
     std::queue<int> queue_dir;
 
