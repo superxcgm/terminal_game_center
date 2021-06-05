@@ -92,6 +92,8 @@ Config Menu::draw_main() {
                 break;
             case 'q': /* quit */
             case 'Q':
+                curs_set(1); /* display cursor */
+                endwin();
                 exit(0);
             case ' ':
             case '\n':
