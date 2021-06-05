@@ -6,14 +6,13 @@
 #include <cstdio>
 
 class Log {
-public:
-    static void init();
+ public:
+  static void init();
 
-    static void debug(const char* fmt, ...);
+  static void debug(const char* fmt, ...);
 
-private:
-    static FILE *fp;
+ private:
+  static FILE* fp;
 };
 
-
-#endif //SNAKE_LOG_H
+#endif  // SNAKE_LOG_H

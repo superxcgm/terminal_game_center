@@ -2,57 +2,56 @@
 #define SNAKE_GAME_H
 
 #include <queue>
-#include "res.h"
+
 #include "config.h"
-#include "snake.h"
 #include "menu.h"
+#include "res.h"
+#include "snake.h"
 
 class Game {
-public:
-    Game();
+ public:
+  Game();
 
-    void init();
+  void init();
 
-    void run();
+  void run();
 
-    void destroy();
+  void destroy();
 
-private:
+ private:
+  Snake the_snake;
 
-    Snake the_snake;
+  bool is_game_over;
 
-    bool is_game_over;
+  std::queue<int> queue_dir;
 
-    std::queue<int> queue_dir;
+  Rect rect;
 
-    Rect rect;
+  Point fruit;
 
-    Point fruit;
+  Menu menu;
 
-    Menu menu;
+  Config config;
 
-    Config config;
+  Resource res_game_over;
 
-    Resource res_game_over;
+  bool is_hit_wall();
 
-    bool is_hit_wall();
+  void on_game();
 
-    void on_game();
+  void add_border_back();
 
-    void add_border_back();
+  void game_over();
 
-    void game_over();
+  void draw_fruit();
 
-    void draw_fruit();
+  bool is_hit_body();
 
-    bool is_hit_body();
+  bool is_hit_fruit();
 
-    bool is_hit_fruit();
+  bool is_hit_snake(const Point &point);
 
-    bool is_hit_snake(const Point &point);
-
-    friend void redraw_snack(int signum);
+  friend void redraw_snack(int signum);
 };
 
-
-#endif //SNAKE_GAME_H
+#endif  // SNAKE_GAME_H

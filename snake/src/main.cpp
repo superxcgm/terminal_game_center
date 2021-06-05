@@ -1,13 +1,13 @@
 #include "game.h"
 
 int main(int argc, char **argv) {
-    Game game;
+  Game game;
 
-    game.init();
+  game.init();
 
-    game.run();
+  game.run();
 
-    game.destroy();
+  game.destroy();
 
-    return 0;
+  return 0;
 };
