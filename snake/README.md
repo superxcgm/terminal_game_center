@@ -11,4 +11,4 @@ A typical game, UI and experience reference `nsnake`.
 
 ## Usage
 1. make
-2. ./Snake
+2. ./bin/snake
