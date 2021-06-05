@@ -1,32 +1,28 @@
-CC = g++
-CFLAGS = -std=c++17 -Wall -pedantic
+CXX = g++
+CFLAGS = -std=c++17 -Wall -pedantic -g
 
-all: snake
+BIN_NAME = snake
 
-snake: set_ticker.o snake.o res.o game.o main.cpp graph.o menu.o log.o
-	$(CC) -o snake -g set_ticker.o snake.o res.o game.o graph.o menu.o log.o main.cpp $(CFLAGS) -lcurses
+SRC_DIR = src
 
-snake.o: snake.cpp snake.h
-	$(CC) -c -g snake.cpp $(CFLAGS)
+DEST_DIR = bin
 
-set_ticker.o: set_ticker.c
-	$(CC) -c -g set_ticker.c $(CFLAGS)
+OBJS := $(patsubst $(SRC_DIR)/%.cpp, $(DEST_DIR)/%.o, $(wildcard $(SRC_DIR)/*.cpp))
 
-res.o: res.cpp res.h
-	$(CC) -c -g res.cpp $(CFLAGS)
+TARGET := $(DEST_DIR)/$(BIN_NAME)
 
-game.o: game.cpp game.h
-	$(CC) -c -g game.cpp $(CFLAGS)
+$(DEST_DIR)/%.o: $(SRC_DIR)/%.cpp
+	$(CXX) -c $< -o $@ $(CFLAGS)
 
-graph.o: graph.h graph.cpp
-	$(CC) -c -g graph.cpp $(CFLAGS)
+all: $(BIN_NAME)
 
-menu.o: menu.cpp menu.h
-	$(CC) -c -g menu.cpp $(CFLAGS)
+$(BIN_NAME): dirs $(OBJS)
+	$(CXX) -o $(TARGET) $(OBJS) $(CFLAGS) -lcurses
 
-log.o: log.cpp log.h
-	$(CC) -c -g log.cpp $(CFLAGS)
+.PHONY: dirs
+dirs:
+	mkdir -p $(DEST_DIR)
 
 .PHONY: clean
 clean:
-	-rm snake *.o
+	-rm $(TARGET) $(OBJS)

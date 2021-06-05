@@ -49,7 +49,7 @@ void redraw_snack(int signum) {
     if (!game_->queue_dir.empty()) {
         Log::debug("Extract direction from queue.\n");
         int new_direction = game_->queue_dir.front();
-        Log::debug("Receive new direction: %d", new_direction);
+        Log::debug("Receive new direction: %d\n", new_direction);
         game_->queue_dir.pop();
         game_->the_snake.change_direction(new_direction);
     }
