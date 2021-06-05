@@ -150,6 +150,7 @@ void Game::on_game() {
     clear();
     rect.draw(config.is_real_border());
 
+    the_snake = Snake();
     the_snake.draw();
 
     draw_fruit();

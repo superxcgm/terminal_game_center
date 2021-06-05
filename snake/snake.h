@@ -7,8 +7,6 @@
 #define WIN_LINES            24
 #define WIN_COLS            80
 #define VERSION                "0.5"
-#define BORDER_ON            1
-#define BORDER_OFF            0
 #define INIT_X                40
 #define INIT_Y                12
 #define INIT_LEN            3
@@ -49,8 +47,6 @@ private:
     bool valid_change_direction(int new_direction);
 
     void print_snake();
-
-    bool is_hit_wall();
 
     std::list<Point> data;
 };
