@@ -11,7 +11,7 @@
 
 int set_ticker(int n_msecs) {
   struct itimerval new_timeset;
-  long n_sec, n_usecs;
+  int64_t n_sec, n_usecs;
 
   n_sec = n_msecs / 1000;             /* int part */
   n_usecs = (n_msecs % 1000) * 1000L; /* remainder */

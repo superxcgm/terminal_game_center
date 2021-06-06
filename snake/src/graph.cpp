@@ -1,4 +1,4 @@
-#include "graph.h"
+#include "graph.h" /* NOLINT */
 
 bool is_horizontal_line(const Point &a, const Point &b) { return a.y == b.y; }
 

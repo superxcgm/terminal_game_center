@@ -1,5 +1,5 @@
-#ifndef SNAKE_LOG_H
-#define SNAKE_LOG_H
+#ifndef SNAKE_SRC_LOG_H_
+#define SNAKE_SRC_LOG_H_
 
 #define DEBUG_ON
 
@@ -15,4 +15,4 @@ class Log {
   static FILE* fp;
 };
 
-#endif  // SNAKE_LOG_H
+#endif  // SNAKE_SRC_LOG_H_

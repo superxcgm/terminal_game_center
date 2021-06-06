@@ -1,10 +1,10 @@
-#include "snake.h"
+#include "./snake.h" /* NOLINT */
 
 #include <ncurses.h>
 
 #include <string>
 
-#include "log.h"
+#include "./log.h"
 
 Snake::Snake() {
   data.push_back({INIT_X, INIT_Y});

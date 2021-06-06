@@ -1,4 +1,4 @@
-#include "res.h"
+#include "./res.h" /* NOLINT */
 
 #include <ncurses.h>
 
@@ -14,10 +14,10 @@ Resource::Resource(const std::string &path) {
   }
   char buf[BUFSIZ];
   while (fgets(buf, BUFSIZ - 1, fp)) {
-    int len = strlen(buf);
+    int len = static_cast<int>(strlen(buf));
     if (buf[len - 1] == '\n')
       buf[len - 1] = '\0'; /* remove newline character */
-    data.push_back(buf);
+    data.emplace_back(buf);
   }
   fclose(fp);
 }

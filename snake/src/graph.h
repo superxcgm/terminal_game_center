@@ -1,5 +1,5 @@
-#ifndef SNAKE_GRAPH_H
-#define SNAKE_GRAPH_H
+#ifndef SNAKE_SRC_GRAPH_H_
+#define SNAKE_SRC_GRAPH_H_
 
 #include <ncurses.h>
 
@@ -21,11 +21,11 @@ class Rect {
     int ch = is_real ? '#' : '.';
     move(0, 0);
     hline(ch, width);
-    move(height, 0);
+    move(height, 0); /* NOLINT */
     hline(ch, width);
-    move(0, 0);
+    move(0, 0); /* NOLINT */
     vline(ch, height);
-    move(0, width);
+    move(0, width); /* NOLINT */
     vline(ch, height);
   }
 
@@ -48,4 +48,4 @@ class Rect {
   int height;
 };
 
-#endif
+#endif  // SNAKE_SRC_GRAPH_H_

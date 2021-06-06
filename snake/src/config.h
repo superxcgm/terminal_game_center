@@ -1,5 +1,5 @@
-#ifndef SNAKE_CONFIG_H
-#define SNAKE_CONFIG_H
+#ifndef SNAKE_SRC_CONFIG_H_
+#define SNAKE_SRC_CONFIG_H_
 
 class Config {
  public:
@@ -26,4 +26,4 @@ class Config {
   bool real_border = true;
 };
 
-#endif  // SNAKE_CONFIG_H
+#endif  // SNAKE_SRC_CONFIG_H_

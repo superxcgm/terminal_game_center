@@ -1,4 +1,4 @@
-#include "menu.h"
+#include "./menu.h" /* NOLINT */
 
 #include <ncurses.h>
 

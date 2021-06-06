@@ -1,13 +1,13 @@
-#ifndef SNAKE_MENU_H
-#define SNAKE_MENU_H
+#ifndef SNAKE_SRC_MENU_H_
+#define SNAKE_SRC_MENU_H_
 
-#include "config.h"
-#include "graph.h"
-#include "res.h"
+#include "./config.h"
+#include "./graph.h"
+#include "./res.h"
 
 class Menu {
  public:
-  Menu(const Rect& rect);
+  explicit Menu(const Rect& rect);
 
   Config draw_main();
 
@@ -22,4 +22,4 @@ class Menu {
   Rect rect;
 };
 
-#endif  // SNAKE_MENU_H
+#endif  // SNAKE_SRC_MENU_H_

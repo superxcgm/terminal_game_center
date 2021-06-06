@@ -1,12 +1,13 @@
-#ifndef SNAKE_GAME_H
-#define SNAKE_GAME_H
+#ifndef SNAKE_SRC_GAME_H_
+#define SNAKE_SRC_GAME_H_
 
 #include <queue>
+#include <random>
 
-#include "config.h"
-#include "menu.h"
-#include "res.h"
-#include "snake.h"
+#include "./config.h"
+#include "./menu.h"
+#include "./res.h"
+#include "./snake.h"
 
 class Game {
  public:
@@ -35,6 +36,8 @@ class Game {
 
   Resource res_game_over;
 
+  std::default_random_engine random_engine;
+
   bool is_hit_wall();
 
   void on_game();
@@ -54,4 +57,4 @@ class Game {
   friend void redraw_snack(int signum);
 };
 
-#endif  // SNAKE_GAME_H
+#endif  // SNAKE_SRC_GAME_H_

@@ -1,4 +1,4 @@
-#include "game.h"
+#include "./game.h"
 
 int main(int argc, char **argv) {
   Game game;
@@ -10,4 +10,4 @@ int main(int argc, char **argv) {
   game.destroy();
 
   return 0;
-};
+}

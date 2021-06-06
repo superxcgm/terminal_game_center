@@ -1,11 +1,11 @@
-#include "game.h"
+#include "./game.h" /* NOLINT */
 
 #include <ncurses.h>
 #include <sys/time.h>
 
 #include <ctime>
 
-#include "log.h"
+#include "./log.h"
 
 void Game::init() {
   initscr();
@@ -17,7 +17,6 @@ void Game::init() {
     exit(1);
   }
   Log::init();
-  srand(time(nullptr));
   cbreak(); /* donot buffer input */
   noecho();
   curs_set(0);          /* donot display cursor */
@@ -198,8 +197,10 @@ void Game::game_over() {
 
 void Game::draw_fruit() {
   do {
-    fruit.x = rect.left() + rand() % (rect.get_width() - 1) + 1;
-    fruit.y = rect.top() + rand() % (rect.get_height() - 1) + 1;
+    std::uniform_int_distribution<int> dis_x(1, rect.right() - 1);
+    std::uniform_int_distribution<int> dis_y(1, rect.bottom() - 1);
+    fruit.x = rect.left() + dis_x(random_engine);
+    fruit.y = rect.top() + dis_y(random_engine);
   } while (is_hit_snake(fruit));
   mvaddch(fruit.y, fruit.x, SYMBOL_FRUIT);
   refresh();

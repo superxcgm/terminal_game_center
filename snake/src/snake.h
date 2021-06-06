@@ -1,9 +1,9 @@
-#ifndef SNAKE_SNAKE_H
-#define SNAKE_SNAKE_H
+#ifndef SNAKE_SRC_SNAKE_H_
+#define SNAKE_SRC_SNAKE_H_
 
 #include <list>
 
-#include "graph.h"
+#include "./graph.h"
 
 #define WIN_LINES 24
 #define WIN_COLS 80
@@ -51,4 +51,4 @@ class Snake {
   friend void redraw_snack(int signum);
 };
 
-#endif
+#endif  // SNAKE_SRC_SNAKE_H_

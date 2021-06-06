@@ -1,5 +1,5 @@
 
-#include "log.h"
+#include "./log.h" /* NOLINT */
 
 #include <cstdarg>
 
