@@ -9,10 +9,10 @@ class Log {
  public:
   static void Init();
 
-  static void Debug(const char* fmt, ...);
+  static void Debug(const char *fmt, ...);
 
  private:
-  static FILE* fp_;
+  static FILE *fp_;
 };
 
 #endif  // SNAKE_SRC_LOG_H_

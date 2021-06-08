@@ -7,14 +7,14 @@
 
 class Menu {
  public:
-  explicit Menu(const Rect& rect);
+  explicit Menu(const Rect &rect);
 
   Config DrawMain();
 
  private:
   void DrawBorder(char ch);
 
-  void DrawControlMenu(int flag, int base, const Config& config);
+  void DrawControlMenu(int flag, int base, const Config &config);
 
   Resource res_snake_;
   Resource res_control_menu_;

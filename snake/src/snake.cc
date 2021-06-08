@@ -9,7 +9,7 @@
 Snake::Snake() {
   data_.push_back({INIT_X, INIT_Y});
   data_.push_back({INIT_X - INIT_LEN, INIT_Y});
-    direction_ = DIR_RIGHT;
+  direction_ = DIR_RIGHT;
 }
 
 void Snake::Draw() {
@@ -35,17 +35,13 @@ void Snake::Update(const Rect &rect) {
   mvaddch(head.y, head.x, SYMBOL_SNAKE_BODY);
 
   switch (direction_) {
-    case DIR_LEFT:
-      head.x--;
+    case DIR_LEFT:head.x--;
       break;
-    case DIR_RIGHT:
-      head.x++;
+    case DIR_RIGHT:head.x++;
       break;
-    case DIR_DOWN:
-      head.y++;
+    case DIR_DOWN:head.y++;
       break;
-    case DIR_UP:
-      head.y--;
+    case DIR_UP:head.y--;
       break;
   }
   mvaddch(head.y, head.x, SYMBOL_SNAKE_HEAD);
@@ -74,17 +70,18 @@ void Snake::Update(const Rect &rect) {
 }
 
 void Snake::ChangeDirection(int new_direction) {
-  if (!valid_change_direction(new_direction)) return;
-  if (direction_ == new_direction) return;
-    direction_ = new_direction;
+  if (!valid_change_direction(new_direction) || direction_ == new_direction) {
+    return;
+  }
+  direction_ = new_direction;
   data_.push_front(data_.front());
 }
 
 bool Snake::valid_change_direction(int new_direction) {
   return !((direction_ == DIR_LEFT && new_direction == DIR_RIGHT) ||
-           (direction_ == DIR_RIGHT && new_direction == DIR_LEFT) ||
-           (direction_ == DIR_UP && new_direction == DIR_DOWN) ||
-           (direction_ == DIR_DOWN && new_direction == DIR_UP));
+      (direction_ == DIR_RIGHT && new_direction == DIR_LEFT) ||
+      (direction_ == DIR_UP && new_direction == DIR_DOWN) ||
+      (direction_ == DIR_DOWN && new_direction == DIR_UP));
 }
 
 void Snake::print_snake() {
@@ -94,7 +91,7 @@ void Snake::print_snake() {
         ", (" + std::to_string(it.x) + ", " + std::to_string(it.y) + ")";
   }
   std::string msg = "Snake: " + str_points + "\n";
-    Log::Debug(msg.c_str());
+  Log::Debug(msg.c_str());
 }
 
 void Snake::DuplicateTail() { data_.push_back(*data_.rbegin()); }
@@ -123,14 +120,14 @@ bool Snake::is_hit(const Point &p, bool ignore_head, const Rect &rect,
       int min_x = std::min(it->x, next->x);
       int max_x = std::max(it->x, next->x);
       if (min_x <= p.x && p.x <= max_x) {
-          Log::Debug("Hit, min_x: %d, max_x: %d, p_x: %d\n", min_x, max_x, p.x);
+        Log::Debug("Hit, min_x: %d, max_x: %d, p_x: %d\n", min_x, max_x, p.x);
         return true;
       }
     } else if (IsVerticalLine(*it, *next) && it->x == p.x) {
       int min_y = std::min(it->y, next->y);
       int max_y = std::max(it->y, next->y);
       if (min_y <= p.y && p.y <= max_y) {
-          Log::Debug("Hit, min_y: %d, max_y: %d, p_y: %d\n", min_y, max_y, p.y);
+        Log::Debug("Hit, min_y: %d, max_y: %d, p_y: %d\n", min_y, max_y, p.y);
         return true;
       }
     }

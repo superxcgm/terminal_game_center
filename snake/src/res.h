@@ -6,9 +6,9 @@
 
 class Resource {
  public:
-  explicit Resource(const std::string& path);
+  explicit Resource(const std::string &path);
   int line_count() { return static_cast<int>(data_.size()); }
-  std::string& get_line(int i) { return data_[i]; }
+  std::string &get_line(int i) { return data_[i]; }
 
   void Draw(int init_x, int init_y);
 

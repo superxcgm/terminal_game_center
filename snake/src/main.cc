@@ -3,11 +3,11 @@
 int main(int argc, char **argv) {
   Game game;
 
-    game.Init();
+  game.Init();
 
-    game.Run();
+  game.Run();
 
-    game.Destroy();
+  game.Destroy();
 
   return 0;
 }

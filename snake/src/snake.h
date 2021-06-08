@@ -26,15 +26,15 @@ class Snake {
 
   void Draw();
 
-  void Update(const Rect& rect);
+  void Update(const Rect &rect);
 
-  void AddHead(const Point& p);
+  void AddHead(const Point &p);
 
   void ChangeDirection(int new_direction);
 
   void DuplicateTail();
 
-  bool is_hit(const Point& p, bool ignore_head, const Rect& rect,
+  bool is_hit(const Point &p, bool ignore_head, const Rect &rect,
               bool is_real_wall);
 
   Point head() { return data_.front(); }

@@ -3,9 +3,9 @@
 
 #include <cstdarg>
 
-FILE* Log::fp_ = nullptr;
+FILE *Log::fp_ = nullptr;
 
-void Log::Debug(const char* fmt, ...) {
+void Log::Debug(const char *fmt, ...) {
   if (fp_ == nullptr) {
     return;
   }
@@ -21,6 +21,6 @@ void Log::Init() {
     return;
   }
 #ifdef DEBUG_ON
-    fp_ = fopen("log.txt", "w");
+  fp_ = fopen("log.txt", "w");
 #endif
 }
