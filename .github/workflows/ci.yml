@@ -21,4 +21,4 @@ jobs:
     - name: lint
       run: make lint
     - name: make build
-      run: make build
+      run: make
