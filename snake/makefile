@@ -7,11 +7,11 @@ SRC_DIR = src
 
 DEST_DIR = bin
 
-OBJS := $(patsubst $(SRC_DIR)/%.cpp, $(DEST_DIR)/%.o, $(wildcard $(SRC_DIR)/*.cpp))
+OBJS := $(patsubst $(SRC_DIR)/%.cc, $(DEST_DIR)/%.o, $(wildcard $(SRC_DIR)/*.cc))
 
 TARGET := $(DEST_DIR)/$(BIN_NAME)
 
-$(DEST_DIR)/%.o: $(SRC_DIR)/%.cpp
+$(DEST_DIR)/%.o: $(SRC_DIR)/%.cc
 	$(CXX) -c $< -o $@ $(CFLAGS)
 
 all: $(BIN_NAME)

@@ -1,26 +1,25 @@
-#ifndef SNAKE_MENU_H
-#define SNAKE_MENU_H
+#ifndef SNAKE_SRC_MENU_H_
+#define SNAKE_SRC_MENU_H_
 
-#include "res.h"
-#include "config.h"
-#include "graph.h"
+#include "./config.h"
+#include "./graph.h"
+#include "./res.h"
 
 class Menu {
-public:
-    Menu(const Rect &rect);
+ public:
+  explicit Menu(const Rect &rect);
 
-    Config draw_main();
+  Config DrawMain();
 
-private:
-    void draw_border(char ch);
+ private:
+  void DrawBorder(char ch);
 
-    void draw_control_menu(int flag, int base, const Config& config);
+  void DrawControlMenu(int flag, int base, const Config &config);
 
-    Resource res_snake;
-    Resource res_control_menu;
+  Resource res_snake_;
+  Resource res_control_menu_;
 
-    Rect rect;
+  Rect rect_;
 };
 
-
-#endif //SNAKE_MENU_H
+#endif  // SNAKE_SRC_MENU_H_

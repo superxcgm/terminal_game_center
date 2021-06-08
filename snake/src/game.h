@@ -1,58 +1,60 @@
-#ifndef SNAKE_GAME_H
-#define SNAKE_GAME_H
+#ifndef SNAKE_SRC_GAME_H_
+#define SNAKE_SRC_GAME_H_
 
 #include <queue>
-#include "res.h"
-#include "config.h"
-#include "snake.h"
-#include "menu.h"
+#include <random>
+
+#include "./config.h"
+#include "./menu.h"
+#include "./res.h"
+#include "./snake.h"
 
 class Game {
-public:
-    Game();
+ public:
+  Game();
 
-    void init();
+  void Init();
 
-    void run();
+  void Run();
 
-    void destroy();
+  void Destroy();
 
-private:
+ private:
+  Snake snake_;
 
-    Snake the_snake;
+  bool is_game_over_;
 
-    bool is_game_over;
+  std::queue<int> queue_dir_;
 
-    std::queue<int> queue_dir;
+  Rect rect_;
 
-    Rect rect;
+  Point fruit_;
 
-    Point fruit;
+  Menu menu_;
 
-    Menu menu;
+  Config config_;
 
-    Config config;
+  Resource res_game_over_;
 
-    Resource res_game_over;
+  std::default_random_engine random_engine_;
 
-    bool is_hit_wall();
+  bool is_hit_wall();
 
-    void on_game();
+  void OnGame();
 
-    void add_border_back();
+  void AddBorderBack();
 
-    void game_over();
+  void GameOver();
 
-    void draw_fruit();
+  void DrawFruit();
 
-    bool is_hit_body();
+  bool is_hit_body();
 
-    bool is_hit_fruit();
+  bool is_hit_fruit();
 
-    bool is_hit_snake(const Point &point);
+  bool is_hit_snake(const Point &point);
 
-    friend void redraw_snack(int signum);
+  friend void RedrawSnack(int signum);
 };
 
-
-#endif //SNAKE_GAME_H
+#endif  // SNAKE_SRC_GAME_H_

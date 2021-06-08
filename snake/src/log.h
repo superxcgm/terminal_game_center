@@ -1,19 +1,18 @@
-#ifndef SNAKE_LOG_H
-#define SNAKE_LOG_H
+#ifndef SNAKE_SRC_LOG_H_
+#define SNAKE_SRC_LOG_H_
 
 #define DEBUG_ON
 
 #include <cstdio>
 
 class Log {
-public:
-    static void init();
+ public:
+  static void Init();
 
-    static void debug(const char* fmt, ...);
+  static void Debug(const char *fmt, ...);
 
-private:
-    static FILE *fp;
+ private:
+  static FILE *fp_;
 };
 
-
-#endif //SNAKE_LOG_H
+#endif  // SNAKE_SRC_LOG_H_
