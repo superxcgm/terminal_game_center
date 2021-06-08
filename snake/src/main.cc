@@ -3,11 +3,11 @@
 int main(int argc, char **argv) {
   Game game;
 
-  game.init();
+    game.Init();
 
-  game.run();
+    game.Run();
 
-  game.destroy();
+    game.Destroy();
 
   return 0;
 }

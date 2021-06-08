@@ -7,7 +7,7 @@
 
 #include "./log.h"
 
-void Game::init() {
+void Game::Init() {
   initscr();
   if (COLS < WIN_COLS || LINES < WIN_LINES) {
     endwin();
@@ -16,7 +16,7 @@ void Game::init() {
     fprintf(stderr, "Please resize your window and try again\n");
     exit(1);
   }
-  Log::init();
+    Log::Init();
   cbreak(); /* donot buffer input */
   noecho();
   curs_set(0);          /* donot display cursor */
@@ -26,112 +26,112 @@ void Game::init() {
   signal(SIGQUIT, SIG_IGN);
 }
 
-void Game::run() {
+void Game::Run() {
   while (true) {
-    config = menu.draw_main();
-    on_game();
+      config_ = menu_.DrawMain();
+      OnGame();
   }
 }
 
-void Game::destroy() {
+void Game::Destroy() {
   curs_set(1); /* display cursor */
   endwin();
 }
 
 static Game *game_;
 
-void redraw_snack(int signum) {
-  if (!game_->queue_dir.empty()) {
-    Log::debug("Extract direction from queue.\n");
-    int new_direction = game_->queue_dir.front();
-    Log::debug("Receive new direction: %d\n", new_direction);
-    game_->queue_dir.pop();
-    game_->the_snake.change_direction(new_direction);
+void RedrawSnack(int signum) {
+  if (!game_->queue_dir_.empty()) {
+      Log::Debug("Extract direction from queue.\n");
+    int new_direction = game_->queue_dir_.front();
+      Log::Debug("Receive new direction: %d\n", new_direction);
+    game_->queue_dir_.pop();
+      game_->snake_.ChangeDirection(new_direction);
   }
-  game_->the_snake.update(game_->rect);
+    game_->snake_.Update(game_->rect_);
 
   if (game_->is_hit_wall()) {
-    //        Log::debug("is real border: %d\n",
-    //        game_->config.is_real_border());
-    Log::debug("Hit the wall.\n");
-    if (game_->config.is_real_wall()) {
-      Log::debug("Real wall, game over.\n");
-      game_->game_over();
+    //        Log::Debug("is real border: %d\n",
+    //        game_->config_.is_real_border());
+      Log::Debug("Hit the wall.\n");
+    if (game_->config_.is_real_wall()) {
+        Log::Debug("Real wall, game over.\n");
+        game_->GameOver();
     } else {
-      game_->add_border_back();
-      auto head = game_->the_snake.head();
-      //            Log::debug("head(%d, %d), rect.right: %d, rect.bottom:
-      //            %d\n", head.x, head.y, game_->rect.right(),
-      //            game_->rect.bottom());
+        game_->AddBorderBack();
+      auto head = game_->snake_.head();
+      //            Log::Debug("head(%d, %d), rect_.right: %d, rect_.bottom:
+      //            %d\n", head.x_, head.y_, game_->rect_.right(),
+      //            game_->rect_.bottom());
       Point new_point_on_other_side{0, 0};
 
-      if (head.x >= game_->rect.right()) {
+      if (head.x >= game_->rect_.right()) {
         new_point_on_other_side = {1, head.y};
       }
       if (head.x <= 0) {
-        new_point_on_other_side = {game_->rect.right() - 1, head.y};
+        new_point_on_other_side = {game_->rect_.right() - 1, head.y};
       }
-      if (head.y >= game_->rect.bottom()) {
+      if (head.y >= game_->rect_.bottom()) {
         new_point_on_other_side = {head.x, 1};
       }
       if (head.y <= 0) {
-        new_point_on_other_side = {head.x, game_->rect.bottom() - 1};
+        new_point_on_other_side = {head.x, game_->rect_.bottom() - 1};
       }
-      game_->the_snake.add_head(new_point_on_other_side);
-      game_->the_snake.add_head(new_point_on_other_side);
+        game_->snake_.AddHead(new_point_on_other_side);
+        game_->snake_.AddHead(new_point_on_other_side);
     }
   }
 
   if (game_->is_hit_fruit()) {
     // todo: duplicate tail add two node to snake which is not really good
-    game_->the_snake.duplicate_tail();
-    game_->draw_fruit();
+      game_->snake_.DuplicateTail();
+      game_->DrawFruit();
   }
 
   if (game_->is_hit_body()) {
-    Log::debug("Hit the body, game over!\n");
-    game_->game_over();
+      Log::Debug("Hit the body, game over!\n");
+      game_->GameOver();
   }
-  game_->the_snake.print_snake();
+  game_->snake_.print_snake();
   refresh();
 }
 
-void Game::add_border_back() {
-  mvaddch(game_->the_snake.head().y, game_->the_snake.head().x, '.');
+void Game::AddBorderBack() {
+  mvaddch(game_->snake_.head().y, game_->snake_.head().x, '.');
 }
 
-void Game::on_game() {
+void Game::OnGame() {
   int set_ticker(int n_msecs);
   int ch;
   int pre_ch;
   int delay;
-  is_game_over = false;
+    is_game_over_ = false;
   clear();
-  rect.draw(config.is_real_wall());
+    rect_.Draw(config_.is_real_wall());
 
-  the_snake = Snake();
-  the_snake.draw();
+    snake_ = Snake();
+    snake_.Draw();
 
-  draw_fruit();
+    DrawFruit();
 
   game_ = this;
-  signal(SIGALRM, redraw_snack);
-  delay = 20 * (10 - config.get_level());
+    signal(SIGALRM, RedrawSnack);
+  delay = 20 * (10 - config_.get_level());
   set_ticker(delay); /* speed of Snake would not change during play */
   pre_ch = ' ';
   while (true) {
     ch = getch();
-    Log::debug("User press %c\n", ch);
+      Log::Debug("User press %c\n", ch);
     if (ch == pre_ch) /* ignore duplication key press */
       continue;
     pre_ch = ch;
-    if (is_game_over) {
+    if (is_game_over_) {
       switch (ch) {
         case 'm':
         case 'M':
-          return; /* back to menu */
+          return; /* back to menu_ */
         case '\n':
-          on_game(); /* just recursion */
+            OnGame(); /* just recursion */
           return;
         default:
           break;
@@ -142,28 +142,28 @@ void Game::on_game() {
       case 'W':
       case KEY_UP:
         /* use queue to buffer direction change request, if change
-        the_snake.direction directly, later request will cover the
+        snake_.direction directly, later request will cover the
         previous request. */
-        queue_dir.push(DIR_UP);
+        queue_dir_.push(DIR_UP);
         break;
       case 's':
       case 'S':
       case KEY_DOWN:
-        queue_dir.push(DIR_DOWN);
+        queue_dir_.push(DIR_DOWN);
         break;
       case 'a':
       case 'A':
       case KEY_LEFT:
-        queue_dir.push(DIR_LEFT);
+        queue_dir_.push(DIR_LEFT);
         break;
       case 'd':
       case 'D':
       case KEY_RIGHT:
-        queue_dir.push(DIR_RIGHT);
+        queue_dir_.push(DIR_RIGHT);
         break;
       case 'q':
       case 'Q':
-        destroy();
+          Destroy();
         exit(0);
       default:
         break;
@@ -172,54 +172,54 @@ void Game::on_game() {
 }
 
 Game::Game()
-    : rect(0, 0, WIN_COLS, WIN_LINES),
-      menu(rect),
-      res_game_over("res/game_over.res") {}
+    : rect_(0, 0, WIN_COLS, WIN_LINES),
+      menu_(rect_),
+      res_game_over_("res/game_over.res") {}
 
-void Game::game_over() {
+void Game::GameOver() {
   int set_ticker(int n_msecs);
   int left_offset;
 
   attron(A_BOLD);
-  mvaddch(game_->the_snake.head().y, game_->the_snake.head().x, 'x');
+  mvaddch(game_->snake_.head().y, game_->snake_.head().x, 'x');
   attroff(A_BOLD);
 
   signal(SIGALRM, SIG_IGN);
   set_ticker(0); /* do not redraw Snake any more */
 
   left_offset =
-      (rect.get_width() - strlen(res_game_over.get_line(0).c_str())) / 2;
-  for (int i = 0; i < res_game_over.line_count(); ++i)
-    mvaddstr(3 + i, left_offset, res_game_over.get_line(i).c_str());
-  is_game_over = true;
+          (rect_.get_width() - strlen(res_game_over_.get_line(0).c_str())) / 2;
+  for (int i = 0; i < res_game_over_.line_count(); ++i)
+    mvaddstr(3 + i, left_offset, res_game_over_.get_line(i).c_str());
+    is_game_over_ = true;
   refresh();
 }
 
-void Game::draw_fruit() {
+void Game::DrawFruit() {
   do {
-    std::uniform_int_distribution<int> dis_x(1, rect.right() - 1);
-    std::uniform_int_distribution<int> dis_y(1, rect.bottom() - 1);
-    fruit.x = rect.left() + dis_x(random_engine);
-    fruit.y = rect.top() + dis_y(random_engine);
-  } while (is_hit_snake(fruit));
-  mvaddch(fruit.y, fruit.x, SYMBOL_FRUIT);
+    std::uniform_int_distribution<int> dis_x(1, rect_.right() - 1);
+    std::uniform_int_distribution<int> dis_y(1, rect_.bottom() - 1);
+      fruit_.x = rect_.left() + dis_x(random_engine_);
+      fruit_.y = rect_.top() + dis_y(random_engine_);
+  } while (is_hit_snake(fruit_));
+  mvaddch(fruit_.y, fruit_.x, SYMBOL_FRUIT);
   refresh();
 }
 
 bool Game::is_hit_body() {
-  return the_snake.is_hit(the_snake.head(), true, rect, config.is_real_wall());
+  return snake_.is_hit(snake_.head(), true, rect_, config_.is_real_wall());
 }
 
 bool Game::is_hit_wall() {
-  auto head = the_snake.head();
-  return head.x == rect.left() || head.y == rect.top() ||
-         head.x == rect.right() || head.y == rect.bottom();
+  auto head = snake_.head();
+  return head.x == rect_.left() || head.y == rect_.top() ||
+         head.x == rect_.right() || head.y == rect_.bottom();
 }
 
 bool Game::is_hit_fruit() {
-  return the_snake.head().x == fruit.x && the_snake.head().y == fruit.y;
+  return snake_.head().x == fruit_.x && snake_.head().y == fruit_.y;
 }
 
 bool Game::is_hit_snake(const Point &point) {
-  return the_snake.is_hit(point, false, rect, config.is_real_wall());
+  return snake_.is_hit(point, false, rect_, config_.is_real_wall());
 }

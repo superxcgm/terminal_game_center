@@ -9,17 +9,17 @@ class Menu {
  public:
   explicit Menu(const Rect& rect);
 
-  Config draw_main();
+  Config DrawMain();
 
  private:
-  void draw_border(char ch);
+  void DrawBorder(char ch);
 
-  void draw_control_menu(int flag, int base, const Config& config);
+  void DrawControlMenu(int flag, int base, const Config& config);
 
-  Resource res_snake;
-  Resource res_control_menu;
+  Resource res_snake_;
+  Resource res_control_menu_;
 
-  Rect rect;
+  Rect rect_;
 };
 
 #endif  // SNAKE_SRC_MENU_H_

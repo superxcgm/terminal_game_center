@@ -3,24 +3,24 @@
 
 #include <cstdarg>
 
-FILE* Log::fp = nullptr;
+FILE* Log::fp_ = nullptr;
 
-void Log::debug(const char* fmt, ...) {
-  if (fp == nullptr) {
+void Log::Debug(const char* fmt, ...) {
+  if (fp_ == nullptr) {
     return;
   }
   va_list args;
   va_start(args, fmt);
-  vfprintf(fp, fmt, args);
+  vfprintf(fp_, fmt, args);
   va_end(args);
-  fflush(fp);
+  fflush(fp_);
 }
 
-void Log::init() {
-  if (fp != nullptr) {
+void Log::Init() {
+  if (fp_ != nullptr) {
     return;
   }
 #ifdef DEBUG_ON
-  fp = fopen("log.txt", "w");
+    fp_ = fopen("log.txt", "w");
 #endif
 }

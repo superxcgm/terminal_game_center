@@ -5,26 +5,26 @@
 #define VERSION "0.5"
 
 Menu::Menu(const Rect& r)
-    : res_snake("res/Snake.res"),
-      res_control_menu("res/control_menu.res"),
-      rect(r) {}
+    : res_snake_("res/snake.res"),
+      res_control_menu_("res/control_menu.res"),
+      rect_(r) {}
 
-void Menu::draw_border(char ch) {
+void Menu::DrawBorder(char ch) {
   // todo: use windows to refactor
   move(0, 0);
-  hline(ch, rect.get_width()); /* top */
+  hline(ch, rect_.get_width()); /* top */
 
-  move(rect.bottom(), 0);
-  hline(ch, rect.get_width()); /* bottom */
+  move(rect_.bottom(), 0);
+  hline(ch, rect_.get_width()); /* bottom */
 
   move(0, 0);
-  vline(ch, rect.get_height()); /* left */
+  vline(ch, rect_.get_height()); /* left */
 
-  move(0, rect.right());
-  vline(ch, rect.get_height()); /* right */
+  move(0, rect_.right());
+  vline(ch, rect_.get_height()); /* right */
 }
 
-void Menu::draw_control_menu(int flag, int base, const Config& config) {
+void Menu::DrawControlMenu(int flag, int base, const Config& config) {
   const int left_offset = 7;
   const int width = 53;
   int i;
@@ -32,8 +32,8 @@ void Menu::draw_control_menu(int flag, int base, const Config& config) {
   switch (flag) {
     case 0:
 
-      for (i = 0; i < res_control_menu.line_count(); ++i)
-        mvaddstr(base + i, left_offset, res_control_menu.get_line(i).c_str());
+      for (i = 0; i < res_control_menu_.line_count(); ++i)
+        mvaddstr(base + i, left_offset, res_control_menu_.get_line(i).c_str());
       break;
     case 1:
       if (config.is_real_wall()) attron(A_BOLD);
@@ -56,39 +56,39 @@ void Menu::draw_control_menu(int flag, int base, const Config& config) {
   refresh();
 }
 
-Config Menu::draw_main() {
+Config Menu::DrawMain() {
   int control_menu_base;
 
   clear();
 
-  res_snake.draw(3, 3);
+    res_snake_.Draw(3, 3);
 
   addstr("   V" VERSION); /* strcat */
-  draw_border('*');
-  control_menu_base = 3 + res_snake.line_count() + 3;
+    DrawBorder('*');
+  control_menu_base = 3 + res_snake_.line_count() + 3;
   Config config;
-  draw_control_menu(0, control_menu_base,
+    DrawControlMenu(0, control_menu_base,
                     config); /* 0=>base, 1=>control part */
-  draw_control_menu(1, control_menu_base, config);
+    DrawControlMenu(1, control_menu_base, config);
   refresh();
   while (true) {
     int ch = getch();
     switch (ch) {
       case KEY_LEFT:
-        config.decreaseLevel();
-        draw_control_menu(1, control_menu_base, config);
+          config.DecreaseLevel();
+            DrawControlMenu(1, control_menu_base, config);
         break;
       case KEY_RIGHT:
-        config.increaseLevel();
-        draw_control_menu(1, control_menu_base, config);
+          config.IncreaseLevel();
+            DrawControlMenu(1, control_menu_base, config);
         break;
       case KEY_UP:
         config.set_real_border(true);
-        draw_control_menu(1, control_menu_base, config);
+            DrawControlMenu(1, control_menu_base, config);
         break;
       case KEY_DOWN:
         config.set_real_border(false);
-        draw_control_menu(1, control_menu_base, config);
+            DrawControlMenu(1, control_menu_base, config);
         break;
       case 'q': /* quit */
       case 'Q':
@@ -97,7 +97,7 @@ Config Menu::draw_main() {
         exit(0);
       case ' ':
       case '\n':
-        return config; /* reenter menu */
+        return config; /* reenter menu_ */
       default:
         break;
     }

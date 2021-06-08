@@ -13,40 +13,40 @@ class Game {
  public:
   Game();
 
-  void init();
+  void Init();
 
-  void run();
+  void Run();
 
-  void destroy();
+  void Destroy();
 
  private:
-  Snake the_snake;
+  Snake snake_;
 
-  bool is_game_over;
+  bool is_game_over_;
 
-  std::queue<int> queue_dir;
+  std::queue<int> queue_dir_;
 
-  Rect rect;
+  Rect rect_;
 
-  Point fruit;
+  Point fruit_;
 
-  Menu menu;
+  Menu menu_;
 
-  Config config;
+  Config config_;
 
-  Resource res_game_over;
+  Resource res_game_over_;
 
-  std::default_random_engine random_engine;
+  std::default_random_engine random_engine_;
 
   bool is_hit_wall();
 
-  void on_game();
+  void OnGame();
 
-  void add_border_back();
+  void AddBorderBack();
 
-  void game_over();
+  void GameOver();
 
-  void draw_fruit();
+  void DrawFruit();
 
   bool is_hit_body();
 
@@ -54,7 +54,7 @@ class Game {
 
   bool is_hit_snake(const Point &point);
 
-  friend void redraw_snack(int signum);
+  friend void RedrawSnack(int signum);
 };
 
 #endif  // SNAKE_SRC_GAME_H_

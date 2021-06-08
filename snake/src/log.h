@@ -7,12 +7,12 @@
 
 class Log {
  public:
-  static void init();
+  static void Init();
 
-  static void debug(const char* fmt, ...);
+  static void Debug(const char* fmt, ...);
 
  private:
-  static FILE* fp;
+  static FILE* fp_;
 };
 
 #endif  // SNAKE_SRC_LOG_H_

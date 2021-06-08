@@ -17,12 +17,12 @@ Resource::Resource(const std::string &path) {
     int len = static_cast<int>(strlen(buf));
     if (buf[len - 1] == '\n')
       buf[len - 1] = '\0'; /* remove newline character */
-    data.emplace_back(buf);
+    data_.emplace_back(buf);
   }
   fclose(fp);
 }
 
-void Resource::draw(int init_x, int init_y) {
-  for (int i = 0; i < data.size(); ++i)
-    mvaddstr(i + init_y, init_x, data[i].c_str());
+void Resource::Draw(int init_x, int init_y) {
+  for (int i = 0; i < data_.size(); ++i)
+    mvaddstr(i + init_y, init_x, data_[i].c_str());
 }

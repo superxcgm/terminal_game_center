@@ -24,31 +24,31 @@ class Snake {
  public:
   Snake();
 
-  void draw();
+  void Draw();
 
-  void update(const Rect& rect);
+  void Update(const Rect& rect);
 
-  void add_head(const Point& p);
+  void AddHead(const Point& p);
 
-  void change_direction(int new_direction);
+  void ChangeDirection(int new_direction);
 
-  void duplicate_tail();
+  void DuplicateTail();
 
   bool is_hit(const Point& p, bool ignore_head, const Rect& rect,
               bool is_real_wall);
 
-  Point head() { return data.front(); }
-
-  int direction;
+  Point head() { return data_.front(); }
 
  private:
+  int direction_;
+
   bool valid_change_direction(int new_direction);
 
   void print_snake();
 
-  std::list<Point> data;
+  std::list<Point> data_;
 
-  friend void redraw_snack(int signum);
+  friend void RedrawSnack(int signum);
 };
 
 #endif  // SNAKE_SRC_SNAKE_H_

@@ -8,44 +8,44 @@ struct Point {
   int y;
 };
 
-bool is_horizontal_line(const Point &a, const Point &b);
+bool IsHorizontalLine(const Point &a, const Point &b);
 
-bool is_vertical_line(const Point &a, const Point &b);
+bool IsVerticalLine(const Point &a, const Point &b);
 
 class Rect {
  public:
   Rect(int x, int y, int width, int height)
-      : x(x), y(y), width(width), height(height) {}
+      : x_(x), y_(y), width_(width), height_(height) {}
 
-  void draw(bool is_real) {
+  void Draw(bool is_real) {
     int ch = is_real ? '#' : '.';
     move(0, 0);
-    hline(ch, width);
-    move(height, 0); /* NOLINT */
-    hline(ch, width);
+    hline(ch, width_);
+    move(height_, 0); /* NOLINT */
+    hline(ch, width_);
     move(0, 0); /* NOLINT */
-    vline(ch, height);
-    move(0, width); /* NOLINT */
-    vline(ch, height);
+    vline(ch, height_);
+    move(0, width_); /* NOLINT */
+    vline(ch, height_);
   }
 
-  int left() const { return x; }
+  int left() const { return x_; }
 
-  int top() const { return y; }
+  int top() const { return y_; }
 
-  int right() const { return x + width - 1; }
+  int right() const { return x_ + width_ - 1; }
 
-  int bottom() const { return y + height - 1; }
+  int bottom() const { return y_ + height_ - 1; }
 
-  int get_width() const { return width; }
+  int get_width() const { return width_; }
 
-  int get_height() const { return height; }
+  int get_height() const { return height_; }
 
  private:
-  int x;
-  int y;
-  int width;
-  int height;
+  int x_;
+  int y_;
+  int width_;
+  int height_;
 };
 
 #endif  // SNAKE_SRC_GRAPH_H_

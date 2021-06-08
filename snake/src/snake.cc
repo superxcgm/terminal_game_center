@@ -7,20 +7,20 @@
 #include "./log.h"
 
 Snake::Snake() {
-  data.push_back({INIT_X, INIT_Y});
-  data.push_back({INIT_X - INIT_LEN, INIT_Y});
-  direction = DIR_RIGHT;
+  data_.push_back({INIT_X, INIT_Y});
+  data_.push_back({INIT_X - INIT_LEN, INIT_Y});
+    direction_ = DIR_RIGHT;
 }
 
-void Snake::draw() {
-  auto head = data.front();
+void Snake::Draw() {
+  auto head = data_.front();
   mvaddch(head.y, head.x, SYMBOL_SNAKE_HEAD);
-  for (auto it = data.begin();; it++) {
+  for (auto it = data_.begin();; it++) {
     auto next = std::next(it);
-    if (next == data.end()) {
+    if (next == data_.end()) {
       break;
     }
-    if (is_vertical_line(*it, *next)) {
+    if (IsVerticalLine(*it, *next)) {
       mvvline(std::min(it->y, next->y), it->x, SYMBOL_SNAKE_BODY,
               std::abs(it->y - next->y) + 1);
     } else {
@@ -30,11 +30,11 @@ void Snake::draw() {
   }
 }
 
-void Snake::update(const Rect &rect) {
-  auto &head = data.front();
+void Snake::Update(const Rect &rect) {
+  auto &head = data_.front();
   mvaddch(head.y, head.x, SYMBOL_SNAKE_BODY);
 
-  switch (direction) {
+  switch (direction_) {
     case DIR_LEFT:
       head.x--;
       break;
@@ -50,66 +50,66 @@ void Snake::update(const Rect &rect) {
   }
   mvaddch(head.y, head.x, SYMBOL_SNAKE_HEAD);
 
-  auto tailRef = data.rbegin();
+  auto tailRef = data_.rbegin();
   auto pre_tail = std::next(tailRef);
   mvaddch(tailRef->y, tailRef->x, SYMBOL_BLANK);
 
   //        print_snake();
-  if (is_horizontal_line(*tailRef, *pre_tail)) {
+  if (IsHorizontalLine(*tailRef, *pre_tail)) {
     if (std::abs(tailRef->x - pre_tail->x) == 1 ||
         std::abs(tailRef->x - pre_tail->x) >= rect.get_width() - 2) {
-      data.pop_back();
+      data_.pop_back();
     } else {
       tailRef->x += pre_tail->x > tailRef->x ? 1 : -1;
     }
-  } else if (is_vertical_line(*tailRef, *pre_tail)) {
+  } else if (IsVerticalLine(*tailRef, *pre_tail)) {
     // vertical
     if (std::abs(tailRef->y - pre_tail->y) == 1 ||
         std::abs(tailRef->y - pre_tail->y) >= rect.get_height() - 2) {
-      data.pop_back();
+      data_.pop_back();
     } else {
       tailRef->y += pre_tail->y > tailRef->y ? 1 : -1;
     }
   }
 }
 
-void Snake::change_direction(int new_direction) {
+void Snake::ChangeDirection(int new_direction) {
   if (!valid_change_direction(new_direction)) return;
-  if (direction == new_direction) return;
-  direction = new_direction;
-  data.push_front(data.front());
+  if (direction_ == new_direction) return;
+    direction_ = new_direction;
+  data_.push_front(data_.front());
 }
 
 bool Snake::valid_change_direction(int new_direction) {
-  return !((direction == DIR_LEFT && new_direction == DIR_RIGHT) ||
-           (direction == DIR_RIGHT && new_direction == DIR_LEFT) ||
-           (direction == DIR_UP && new_direction == DIR_DOWN) ||
-           (direction == DIR_DOWN && new_direction == DIR_UP));
+  return !((direction_ == DIR_LEFT && new_direction == DIR_RIGHT) ||
+           (direction_ == DIR_RIGHT && new_direction == DIR_LEFT) ||
+           (direction_ == DIR_UP && new_direction == DIR_DOWN) ||
+           (direction_ == DIR_DOWN && new_direction == DIR_UP));
 }
 
 void Snake::print_snake() {
   std::string str_points;
-  for (auto &it : data) {
+  for (auto &it : data_) {
     str_points +=
         ", (" + std::to_string(it.x) + ", " + std::to_string(it.y) + ")";
   }
   std::string msg = "Snake: " + str_points + "\n";
-  Log::debug(msg.c_str());
+    Log::Debug(msg.c_str());
 }
 
-void Snake::duplicate_tail() { data.push_back(*data.rbegin()); }
+void Snake::DuplicateTail() { data_.push_back(*data_.rbegin()); }
 
 bool Snake::is_hit(const Point &p, bool ignore_head, const Rect &rect,
                    bool is_real_wall) {
-  auto head = data.begin();
-  auto start = data.begin();
+  auto head = data_.begin();
+  auto start = data_.begin();
   if (ignore_head) {
     while (head->x == start->x && head->y == start->y) start++;
   }
 
   for (auto it = start;; it++) {
     auto next = std::next(it);
-    if (next == data.end()) {
+    if (next == data_.end()) {
       break;
     }
 
@@ -119,18 +119,18 @@ bool Snake::is_hit(const Point &p, bool ignore_head, const Rect &rect,
         continue;
       }
     }
-    if (is_horizontal_line(*it, *next) && it->y == p.y) {
+    if (IsHorizontalLine(*it, *next) && it->y == p.y) {
       int min_x = std::min(it->x, next->x);
       int max_x = std::max(it->x, next->x);
       if (min_x <= p.x && p.x <= max_x) {
-        Log::debug("Hit, min_x: %d, max_x: %d, p_x: %d\n", min_x, max_x, p.x);
+          Log::Debug("Hit, min_x: %d, max_x: %d, p_x: %d\n", min_x, max_x, p.x);
         return true;
       }
-    } else if (is_vertical_line(*it, *next) && it->x == p.x) {
+    } else if (IsVerticalLine(*it, *next) && it->x == p.x) {
       int min_y = std::min(it->y, next->y);
       int max_y = std::max(it->y, next->y);
       if (min_y <= p.y && p.y <= max_y) {
-        Log::debug("Hit, min_y: %d, max_y: %d, p_y: %d\n", min_y, max_y, p.y);
+          Log::Debug("Hit, min_y: %d, max_y: %d, p_y: %d\n", min_y, max_y, p.y);
         return true;
       }
     }
@@ -138,4 +138,4 @@ bool Snake::is_hit(const Point &p, bool ignore_head, const Rect &rect,
   return false;
 }
 
-void Snake::add_head(const Point &p) { data.push_front(p); }
+void Snake::AddHead(const Point &p) { data_.push_front(p); }
