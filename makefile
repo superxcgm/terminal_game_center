@@ -1,5 +1,7 @@
 
-all: format lint
+all:
+	@$(MAKE) -C snake
+	@$(MAKE) -C bounce
 
 .PHONY: format
 format:
