@@ -36,3 +36,6 @@ brew install ncurses
 sudo apt-get update
 sudo apt-get install libncurses5-dev
 ```
+
+## Contribution Guideline
+[here](https://github.com/superxcgm/terminal_game_center/wiki/Contribution-Guideline)
