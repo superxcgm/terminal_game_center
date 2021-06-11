@@ -19,23 +19,10 @@ under developing
 
 ## Dependencies
 
-### curses
-
-#### Install
-
-##### OS X
-```
-brew install ncurses
-```
-
-##### Centos
-`yum install ncurses-devel`
-
-##### Ubuntu
-```
-sudo apt-get update
-sudo apt-get install libncurses5-dev
-```
+* make
+* cpplint
+* ncurses
+* clang-format
 
 ## Contribution Guideline
 [here](https://github.com/superxcgm/terminal_game_center/wiki/Contribution-Guideline)
